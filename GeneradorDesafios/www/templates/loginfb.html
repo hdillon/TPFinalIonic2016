@@ -1,0 +1,45 @@
+<ion-view view-title="Loginfb">
+  <ion-header-bar>
+    <h1 class="title">loginfb</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeLogin()">Close</button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form >
+      <div ng-if='mostrarLogin' class="list">
+        <label class="item item-input">
+          <span class="input-label">Username</span>
+          <input type="text" ng-model="loginData.username">
+        </label>
+        <label class="item item-input">
+          <span class="input-label">Password</span>
+          <input type="password" ng-model="loginData.password">
+        </label>
+        <label class="item">
+          <button  class="button button-block button-positive" ng-click="loguear()">Log in</button>
+        </label>
+
+        <label class="item">
+          <button  class="button button-block button-assertive" ng-click="resetearPass()">Resetear Password</button>
+        </label>
+
+        <label class="item">
+          <button  class="button button-block button-assertive" ng-click="registrarse()">Registrarse</button>
+        </label>
+
+      </div>
+
+      <label ng-if="mostrarVerificar" class="item">
+          <button  class="button button-block button-assertive" ng-click="verificarEmail()">Verificar email</button>
+        </label>
+
+      <div ng-if='mostrarLogOut' class="list">
+        <label class="item">
+          <button  class="button button-block button-positive" ng-click="desloguear()">Log out</button>
+        </label>
+      </div>
+
+    </form>
+  </ion-content>
+</ion-view>

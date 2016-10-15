@@ -1,0 +1,43 @@
+Generador de desafios:
+Usuarios que establecen desafios.
+En trar en los desafios de otros usuarios.
+(Ej apuesto 100 creditos a que mañana llueve).
+otro usuario acepta el desafio y (la apuesta debe tener un tiempo limite, puede ser temático (futbol, clima, etc)).
+Los desafios pueden ser aceptados por 1 o varias personas (siempre y  cuando el usuario esté CONECTADO utilizando el evento que nos dá firebase).
+
+
+Batalla naval:
+4botones, (se deben limitar los créditos por apuesta) El que acepta el desafio debe elegir dondo apuesta su crédito.
+COMEZAR (cuando los 2 usuarios hicieron sus apuestas). Una vez que empieza el juego, el que hizo la apuesta aprieta uno de los 4 botones, si le pega gana, sino le toca al otro, si el que empieza tiro una vez el otro como minimo tiene que tener la posibilidad de tirar tambien, para que haya posibilidad de empatar (hay que validar que el usuario esté conectado y manejar la operatoria de pasar crédito entre usuarios).
+Si se corta internet hay que manejar un limite para que el usuario se vuelva a conectar (durante ese tiempo ese crédito podría quedar "tomado" para no poder ser usado).Si pasó el tiempo limite para ressponder la apuesta gana el ultimo que jugó yn se queda con el crédito.
+
+una vez terminado el batalla naval de 4x4 la idea es hacer una matriz mas grande y distribuir el credito en mas lugares.
+El que generó la apuesta puede decidir cuando cierra la apuesta y no aceptar mas retadores.
+Tener cuidado ya que firebase igue trabajando desconectado por defecto, (verificar desde ajax cada vez que voy a guardar si está conectado, si vuelve de ajax es porque tengo internet)
+
+basicamente los dos juegon son iguales, solo que el segundi tiene una grilla.
+
+el usuario pone una fecha de inicio de la apuesta y una de fin.
+
+Cuando uno genera una apuesta, la app debe enviarle un mensaje a TODOS LOS QUE ESTNE CONECTADOS EN ESE MOMENTO avisandoles que hay un nuevo desafio. (o tiene que haber una lista de desafios que se va actualizando)
+
+Lo mas importante es ver como hacer para verificar si los usuarios estan conectados o no.
+
+botones de usuario 1 usuario2, admin, etc.
+
+los credistos se deben cargar por un codigo QR con la camara.
+(ejemplo que el maximo de credditos por apuesta puede ser 10 y el credito inicial podria ser 1000)
+
+instalar firebase tools para poder tirar el comando firebasedeploy.
+
+todo lo que está en el dir wwww .. si sudo ese dir a un host la app va a funcionar (salvo lo de mobile)
+
+firebase init parados en www.. crea una carpeta public que es lo que va a subir.
+copio todo lo que está en www en la carpeta public.
+firebase deploy www.mihost.com y de ahí probar la app y poder testear los login.
+
+guardar en firebase /usuarios/ los datos que me devuelve por ejemplo el token de github(nombre, foto!, podria recuperar la listra de repositorios publicos etc)
+
+---
+crear servidor php con los ejemplos de satellizer que tome el token que me devuelve github y configurar la app en github con la url de mi servidor en el callback
+

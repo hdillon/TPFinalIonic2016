@@ -24,6 +24,20 @@
     -->
 
     <!-- ionic/angularjs js -->
+
+    <script src="https://www.gstatic.com/firebasejs/3.4.1/firebase.js"></script>
+    <script>
+      // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyA6xIzzup0gHxfmSukj_LDkud26PQafocs",
+        authDomain: "myapp-d5d9c.firebaseapp.com",
+        databaseURL: "https://myapp-d5d9c.firebaseio.com",
+        storageBucket: "myapp-d5d9c.appspot.com",
+        messagingSenderId: "374106852509"
+      };
+        firebase.initializeApp(config);
+    </script>
+    
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
