@@ -125,5 +125,27 @@ angular.module('starter.controllers', [])
 
 })
 
+.controller('ObtenerCreditosCtrl', function($scope, $ionicPlatform, $cordovaBarcodeScanner) {
+
+  $scope.scanear = function(){
+    try{
+      $ionicPlatform.ready(function() {
+      
+        $cordovaBarcodeScanner
+        .scan()
+        .then(function(barcodeData) {
+          console.info("BarCode: ", barcodeData);
+        }, function(error) {
+          console.info("BarCode: ", barcodeData);
+        });
+
+      });
+    }catch(err){
+      console.log("No es un dispositivo mobile!");
+    }
+  }
+
+})
+
 .controller('CrearDesafioCtrl', function($scope, $stateParams) {
 });
