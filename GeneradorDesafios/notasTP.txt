@@ -1,6 +1,6 @@
 Generador de desafios:
 Usuarios que establecen desafios.
-En trar en los desafios de otros usuarios.
+Entrar en los desafios de otros usuarios.
 (Ej apuesto 100 creditos a que mañana llueve).
 otro usuario acepta el desafio y (la apuesta debe tener un tiempo limite, puede ser temático (futbol, clima, etc)).
 Los desafios pueden ser aceptados por 1 o varias personas (siempre y  cuando el usuario esté CONECTADO utilizando el evento que nos dá firebase).

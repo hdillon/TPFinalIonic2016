@@ -32,43 +32,53 @@ angular.module('starter', ['ionic', 'starter.controllers'])
     controller: 'AppCtrl'
   })
 
-  .state('app.loginfb', {
-    url: '/loginfb',
+  .state('app.login', {
+    url: '/login',
     views: {
       'menuContent': {
-        templateUrl: 'templates/loginfb.html',
-        controller: 'LoginFbCtrl'
+        templateUrl: 'templates/login.html',
+        controller: 'LoginCtrl'
       }
     }
   })
 
-  .state('app.browse', {
-      url: '/browse',
+  .state('app.perfil', {
+      url: '/perfil',
       views: {
         'menuContent': {
-          templateUrl: 'templates/browse.html'
+          templateUrl: 'templates/perfil.html',
+          controller: 'PerfilCtrl'
         }
       }
     })
-    .state('app.playlists', {
-      url: '/playlists',
+    .state('app.creardesafios', {
+      url: '/creardesafios',
       views: {
         'menuContent': {
-          templateUrl: 'templates/playlists.html',
-          controller: 'PlaylistsCtrl'
+          templateUrl: 'templates/crearDesafio.html',
+          controller: 'CrearDesafioCtrl'
+        }
+      }
+    })
+    .state('app.buscardesafios', {
+      url: '/buscardesafios',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/buscarDesafios.html',
+          controller: 'BuscarDesafiosCtrl'
         }
       }
     })
 
-  .state('app.single', {
-    url: '/playlists/:playlistId',
+  .state('app.misdesafios', {
+    url: '/misdesafios',
     views: {
       'menuContent': {
-        templateUrl: 'templates/playlist.html',
-        controller: 'PlaylistCtrl'
+        templateUrl: 'templates/misDesafios.html',
+        controller: 'MisDesafiosCtrl'
       }
     }
   });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/app/loginfb');
+  $urlRouterProvider.otherwise('/app/login');
 });
