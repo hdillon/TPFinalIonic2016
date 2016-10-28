@@ -125,16 +125,34 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('AltaCreditosCtrl', function($scope,$firebaseArray, Usuario) {
+.controller('AltaCreditosCtrl', function($scope, $crypto, Usuario) {
   $scope.FBRef = new Firebase("https://generadordesafios.firebaseio.com/");
+  $scope.credito = {};
+  $scope.credito.cantidad = '0';
 
   $scope.altaCredito = function(){
-    console.info("asd",Usuario);
+
+    var encrypted = $crypto.encrypt(Usuario.nombre + ' ' + $scope.fechaActual() + '$' + $scope.credito.cantidad);
+    var decrypted = $crypto.decrypt(encrypted);
+
+    console.info("encrypted ",encrypted);
+    console.info("decrypted",decrypted);
     $scope.FBRef.child('Creditos')
      .push({ 
-      "codigo": Usuario.nombre,
+      "codigo": $crypto.encrypt(Usuario.nombre + ' ' + $scope.fechaActual() + '$' + $scope.credito.cantidad),
       "usado": false
       });
+  }
+
+  $scope.fechaActual = function(){
+    now = new Date();
+    year = "" + now.getFullYear();
+    month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+    day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+    hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+    minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+    second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
+    return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
   }
 
 })

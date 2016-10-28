@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.services', 'ngCordova'])
+angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.services', 'ngCordova', 'mdo-angular-cryptography'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -13,7 +13,9 @@ angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.s
   });
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $cryptoProvider) {
+  $cryptoProvider.setCryptographyKey('ABCD123');
+  
   $stateProvider
 
     .state('app', {
