@@ -125,6 +125,20 @@ angular.module('starter.controllers', [])
 
 })
 
+.controller('AltaCreditosCtrl', function($scope,$firebaseArray, Usuario) {
+  $scope.FBRef = new Firebase("https://generadordesafios.firebaseio.com/");
+
+  $scope.altaCredito = function(){
+    console.info("asd",Usuario);
+    $scope.FBRef.child('Creditos')
+     .push({ 
+      "codigo": Usuario.nombre,
+      "usado": false
+      });
+  }
+
+})
+
 .controller('ObtenerCreditosCtrl', function($scope, $ionicPlatform, $cordovaBarcodeScanner) {
 
   $scope.scanear = function(){

@@ -15,7 +15,7 @@ una vez terminado el batalla naval de 4x4 la idea es hacer una matriz mas grande
 El que generó la apuesta puede decidir cuando cierra la apuesta y no aceptar mas retadores.
 Tener cuidado ya que firebase igue trabajando desconectado por defecto, (verificar desde ajax cada vez que voy a guardar si está conectado, si vuelve de ajax es porque tengo internet)
 
-basicamente los dos juegon son iguales, solo que el segundi tiene una grilla.
+basicamente los dos juegon son iguales, solo que el segundo tiene una grilla.
 
 el usuario pone una fecha de inicio de la apuesta y una de fin.
 

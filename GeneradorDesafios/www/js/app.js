@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', 'ngCordova'])
+angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.services', 'ngCordova'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -66,6 +66,15 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         }
       }
     })
+    .state('app.altacreditos', {
+      url: '/altacreditos',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/altaCreditos.html',
+          controller: 'AltaCreditosCtrl'
+        }
+      }
+    })
     .state('app.misdesafios', {
       url: '/misdesafios',
       views: {
@@ -75,6 +84,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services', '
         }
       }
     });
-  // if none of the above states are matched, use this as the fallback
+
   $urlRouterProvider.otherwise('/app/login');
 });
