@@ -25,7 +25,7 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('LoginCtrl', function($scope, $timeout) {
+.controller('LoginCtrl', function($scope, $timeout, servicioABM) {
     $scope.loginData={};
     $scope.loginData.email = "dillonhoraciodavid@gmail.com";
     $scope.loginData.password = "34551422";
@@ -66,7 +66,8 @@ angular.module('starter.controllers', [])
       }).then(function(respuesta){
         console.info("REGISTRO: ", respuesta);
         $timeout(function(){
- 
+          $scope.loginData.uid = respuesta.uid;//MANEJAR ERRORES!
+          servicioABM.altaUsuario($scope.loginData);
         });
         
       });
@@ -125,35 +126,14 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('AltaCreditosCtrl', function($scope, $crypto, Usuario) {
-  $scope.FBRef = new Firebase("https://generadordesafios.firebaseio.com/");
+.controller('AltaCreditosCtrl', function($scope, servicioABM) {
   $scope.credito = {};
   $scope.credito.cantidad = '0';
 
   $scope.altaCredito = function(){
-
-    var encrypted = $crypto.encrypt(Usuario.nombre + ' ' + $scope.fechaActual() + '$' + $scope.credito.cantidad);
-    var decrypted = $crypto.decrypt(encrypted);
-
-    console.info("encrypted ",encrypted);
-    console.info("decrypted",decrypted);
-    $scope.FBRef.child('Creditos')
-     .push({ 
-      "codigo": $crypto.encrypt(Usuario.nombre + ' ' + $scope.fechaActual() + '$' + $scope.credito.cantidad),
-      "usado": false
-      });
+    servicioCreditos.altaCredito($scope.credito.cantidad);
   }
 
-  $scope.fechaActual = function(){
-    now = new Date();
-    year = "" + now.getFullYear();
-    month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
-    day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
-    hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
-    minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
-    second = "" + now.getSeconds(); if (second.length == 1) { second = "0" + second; }
-    return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + second;
-  }
 
 })
 
