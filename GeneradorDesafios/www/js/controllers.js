@@ -25,7 +25,7 @@ angular.module('starter.controllers', [])
   };
 })
 
-.controller('LoginCtrl', function($scope, $timeout, servicioABM) {
+.controller('LoginCtrl', function($scope, $timeout, servicioABM, Usuario) {
     $scope.loginData={};
     $scope.loginData.email = "dillonhoraciodavid@gmail.com";
     $scope.loginData.password = "34551422";
@@ -39,6 +39,9 @@ angular.module('starter.controllers', [])
       alert("Datos incorrectos!");
       }).then(function(respuesta){
         console.info("RTA:", respuesta);
+        //Cuando se loguea correctamente le seteo el uid al usuario
+        Usuario.setUid(respuesta.uid);
+        servicioABM.cargarUsuario(respuesta.uid);
         alert("Bienvenido!");
         $timeout(function(){
           /*console.info("Esta Autenticado", respuesta.emailVerified);
@@ -126,38 +129,6 @@ angular.module('starter.controllers', [])
 
 })
 
-.controller('AltaCreditosCtrl', function($scope, servicioABM) {
-  $scope.credito = {};
-  $scope.credito.cantidad = '0';
-
-  $scope.altaCredito = function(){
-    servicioCreditos.altaCredito($scope.credito.cantidad);
-  }
-
-
-})
-
-.controller('ObtenerCreditosCtrl', function($scope, $ionicPlatform, $cordovaBarcodeScanner) {
-
-  $scope.scanear = function(){
-    try{
-      $ionicPlatform.ready(function() {
-      
-        $cordovaBarcodeScanner
-        .scan()
-        .then(function(barcodeData) {
-          console.info("BarCode: ", barcodeData);
-        }, function(error) {
-          console.info("BarCode: ", barcodeData);
-        });
-
-      });
-    }catch(err){
-      console.log("No es un dispositivo mobile!");
-    }
-  }
-
-})
 
 .controller('CrearDesafioCtrl', function($scope, $stateParams) {
 });

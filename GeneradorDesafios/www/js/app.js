@@ -1,4 +1,4 @@
-angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.services', 'ngCordova', 'mdo-angular-cryptography'])
+angular.module('starter', ['ionic','firebase', 'starter.controllers', 'starter.controladorCreditos', 'starter.services', 'ngCordova', 'mdo-angular-cryptography'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

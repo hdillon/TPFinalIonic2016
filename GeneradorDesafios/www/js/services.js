@@ -2,19 +2,26 @@ angular.module('starter.services', [])
 
 .factory('Usuario', function () {
         var usuario = {};
-
-        // myProperty
         usuario.nombre = 'NOLOGUEADO';
+        usuario.uid = '';
+        usuario.creditos;
 
-        // Set myProperty
         usuario.setNombre = function (value) {
             this.nombre = value;
         };
 
-        return usuario;
-    })
+        usuario.setUid = function (value) {
+            this.uid = value;
+        };
 
-.service('servicioABM', function ($crypto, Usuario) {
+        usuario.setCredito = function (value) {
+            this.creditos = value;
+        };
+
+        return usuario;
+})
+
+.service('servicioABM', function ($crypto, Usuario, $firebaseArray) {
     var FBRef = new Firebase("https://generadordesafios.firebaseio.com/");
 
     this.altaCredito = function(cantidadCredito){
@@ -29,6 +36,13 @@ angular.module('starter.services', [])
         });
     }
 
+    this.cargarCredito = function(codigo){
+        var codigoDesencriptado = $crypto.decrypt(codigo);
+        var cantidadCredito = codigoDesencriptado.split("$");
+        cantidadCredito = cantidadCredito[1];
+
+    }
+
     function fechaActual(){
         now = new Date();
         year = "" + now.getFullYear();
@@ -41,17 +55,30 @@ angular.module('starter.services', [])
     }
 
     this.altaUsuario = function(usuario){
-        FBRef.child('Usuarios')
-        .push({ 
-          "uid": usuario.uid,
+        FBRef.child('Usuarios').child(usuario.uid)
+        .set({ 
           "email": usuario.email,
           "credito": 1000
         });
     }
-})
 
+    this.cargarUsuario = function(uid){
+        var usuario = FBRef.child('Usuarios');
+        var datosFBArray = $firebaseArray(FBRef.child('Usuarios'));
+        console.info("USUARIO OBTENIDO: " , datosFBArray); 
 
-.factory("Preguntas", function($firebaseArray) {
-  var itemsRef = new Firebase('https://triviaionicapp.firebaseio.com/-KRz59x-ec_7fg5rTh5A');
-  return itemsRef;
+        FBRef.child('Usuarios').once("value", function(snapshot) {
+        console.info("Datos", snapshot.val());
+        var snap = snapshot.val();
+
+        
+
+        console.info("snapp", snap.SdThmrKJBpXhLtwaA8mF2Gsfvhz1.credito);
+
+        
+        
+        });
+
+    }
+
 });
