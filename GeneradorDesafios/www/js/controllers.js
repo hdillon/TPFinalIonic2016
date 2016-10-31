@@ -40,8 +40,7 @@ angular.module('starter.controllers', [])
       }).then(function(respuesta){
         console.info("RTA:", respuesta);
         //Cuando se loguea correctamente le seteo el uid al usuario
-        Usuario.setUid(respuesta.uid);
-        servicioABM.cargarUsuario(respuesta.uid);
+        Usuario.cargarUsuario(respuesta.uid);
         alert("Bienvenido!");
         $timeout(function(){
           /*console.info("Esta Autenticado", respuesta.emailVerified);

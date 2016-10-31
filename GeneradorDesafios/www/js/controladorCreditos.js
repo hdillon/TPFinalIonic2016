@@ -11,7 +11,7 @@ angular.module('starter.controladorCreditos', [])
 
 })
 
-.controller('ObtenerCreditosCtrl', function($scope, $ionicPlatform, $cordovaBarcodeScanner,$firebaseArray, servicioABM) {
+.controller('ObtenerCreditosCtrl', function($scope, $ionicPlatform, $cordovaBarcodeScanner,$firebaseArray, servicioABM, Usuario) {
 	var FBRef = new Firebase("https://generadordesafios.firebaseio.com/Creditos");
 	$scope.datosFB;
 	$scope.datosFBArray = $firebaseArray(FBRef);
@@ -44,7 +44,8 @@ angular.module('starter.controladorCreditos', [])
         console.info("creditossss", creditos.codigo);
         if(creditos.codigo == codigo.text){
         	console.log("coinciden!!");
-        	servicioABM.cargarCredito(codigo.text);
+        	console.log("CODIGO: ", codigo.text);
+        	Usuario.cargarCredito(codigo.text);
         }
      })
   }

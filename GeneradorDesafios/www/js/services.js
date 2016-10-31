@@ -1,22 +1,35 @@
 angular.module('starter.services', [])
 
-.factory('Usuario', function () {
+.factory('Usuario', function ($crypto) {
         var usuario = {};
-        usuario.nombre = 'NOLOGUEADO';
-        usuario.uid = '';
-        usuario.creditos;
+        var FBRefUsuario;
 
-        usuario.setNombre = function (value) {
-            this.nombre = value;
-        };
+        usuario.cargarUsuario = function(uid){
+            console.log("uid", uid);
+            FBRefUsuario = new Firebase("https://generadordesafios.firebaseio.com/Usuarios/" + uid + "/");
 
-        usuario.setUid = function (value) {
-            this.uid = value;
-        };
+            FBRefUsuario.once("value", function(snapshot) {
+            console.info("Usuario", snapshot.val());
+            usuario = snapshot.val();
 
-        usuario.setCredito = function (value) {
-            this.creditos = value;
-        };
+            console.info("snap: ", usuario);
+            console.info("email: ", usuario.email);
+            console.info("credito: ", usuario.credito);
+            
+            });
+
+        }
+
+        usuario.cargarCredito = function (codigo) {
+            var codigoDesencriptado = $crypto.decrypt(codigo);
+            var cantidadCredito = codigoDesencriptado.split("$");
+            cantidadCredito = usuario.credito + Number(cantidadCredito[1]); //sumo el credito que ya tenía el usuario con el del código QR
+            FBRefUsuario.update({
+                credito : cantidadCredito
+            });
+        }
+
+
 
         return usuario;
 })
@@ -34,13 +47,6 @@ angular.module('starter.services', [])
           "codigo": $crypto.encrypt(Usuario.nombre + ' ' + fechaActual() + '$' + cantidadCredito),
           "usado": false
         });
-    }
-
-    this.cargarCredito = function(codigo){
-        var codigoDesencriptado = $crypto.decrypt(codigo);
-        var cantidadCredito = codigoDesencriptado.split("$");
-        cantidadCredito = cantidadCredito[1];
-
     }
 
     function fechaActual(){
@@ -62,23 +68,6 @@ angular.module('starter.services', [])
         });
     }
 
-    this.cargarUsuario = function(uid){
-        var usuario = FBRef.child('Usuarios');
-        var datosFBArray = $firebaseArray(FBRef.child('Usuarios'));
-        console.info("USUARIO OBTENIDO: " , datosFBArray); 
-
-        FBRef.child('Usuarios').once("value", function(snapshot) {
-        console.info("Datos", snapshot.val());
-        var snap = snapshot.val();
-
-        
-
-        console.info("snapp", snap.SdThmrKJBpXhLtwaA8mF2Gsfvhz1.credito);
-
-        
-        
-        });
-
-    }
+    
 
 });
