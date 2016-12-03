@@ -5,19 +5,15 @@
       <button class="button button-clear" ng-click="closeLogin()">Close</button>
     </div>
   </ion-header-bar>
-  <ion-content>
+    <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
     <form >
       <div ng-if='mostrarLogin' class="list">
-        <label class="item item-input">
-          <span class="input-label">email</span>
-          <input type="text" ng-model="loginData.email">
-        </label>
-        <label class="item item-input">
-          <span class="input-label">Password</span>
-          <input type="password" ng-model="loginData.password">
-        </label>
+
+      <ion-md-input placeholder="Email" ng-model="loginData.email" highlight-color="balanced" type="text"></ion-md-input>
+      <ion-md-input placeholder="Password" ng-model="loginData.password" highlight-color="energized" type="password"></ion-md-input>
+
         <label class="item">
-          <button  class="button button-block button-positive" ng-click="loguear()">Log in</button>
+          <button  class="button button-block button-positive" ng-click="loguear()">Login</button>
         </label>
 
         <label class="item">
