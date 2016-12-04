@@ -9,9 +9,10 @@
     <form >
       <div ng-if='mostrarLogin' class="list">
 
-      <ion-md-input placeholder="Email" ng-model="loginData.email" highlight-color="balanced" type="text"></ion-md-input>
-      <ion-md-input placeholder="Password" ng-model="loginData.password" highlight-color="energized" type="password"></ion-md-input>
-
+        <div class="margenfix">
+          <ion-md-input placeholder="Email" ng-model="loginData.email" highlight-color="balanced" type="text"></ion-md-input>
+          <ion-md-input placeholder="Password" ng-model="loginData.password" highlight-color="energized" type="password"></ion-md-input>
+        </div>
         <label class="item">
           <button  class="button button-block button-positive" ng-click="loguear()">Login</button>
         </label>

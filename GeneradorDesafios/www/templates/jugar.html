@@ -1,0 +1,25 @@
+<ion-view view-title="Browse">
+  <ion-content>
+  <!-- http://embed.plnkr.co/3VUsekP3jC5xwSIQDVHx/preview -->
+  <div class="margenjugar">
+  <center>
+    <form class="form-horizontal">
+        <div class="form-group">
+          <table ng-init="init()">
+            <tr ng-repeat="row in ledMatrixRows">
+              <td ng-repeat="col in row"><button class="button button-positive" ng-class="{'button-balanced': col.value=='1'}" ng-click="setVal(col)">{{col.value}}</button></td>
+            </tr>
+          </table>  
+        </div>
+        <!--<div class="form-group">
+          <button ng-click="clear()" class="btn btn-warning">CLEAR</button>    
+        </div>
+        <div class="form-group">
+          <label for="code">Code</label>
+          <textarea id="code" class="form-control" cols="60" rows="5">{{code}}</textarea>
+        </div>-->
+      </form>
+  </center>
+  </div>
+  </ion-content>
+</ion-view>

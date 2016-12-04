@@ -14,7 +14,7 @@ angular.module('starter', ['ionic','ionic-material','ionMdInput', 'firebase', 's
 })
 
 .config(function($stateProvider, $urlRouterProvider, $cryptoProvider) {
-  $cryptoProvider.setCryptographyKey('ABCD123');
+  $cryptoProvider.setCryptographyKey('ABCD123');//Esta es la clave de encripción
   
   $stateProvider
 
@@ -23,7 +23,8 @@ angular.module('starter', ['ionic','ionic-material','ionMdInput', 'firebase', 's
       abstract: true,
       templateUrl: 'templates/menu.html',
       controller: 'AppCtrl'
-    }).state('app.login', {
+    })
+    .state('app.login', {
       url: '/login',
       views: {
         'menuContent': {
@@ -74,6 +75,15 @@ angular.module('starter', ['ionic','ionic-material','ionMdInput', 'firebase', 's
         'menuContent': {
           templateUrl: 'templates/altaCreditos.html',
           controller: 'AltaCreditosCtrl'
+        }
+      }
+    })
+    .state('app.jugar', {
+      url: '/jugar',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/jugar.html',
+          controller: 'JugarCtrl'
         }
       }
     })
