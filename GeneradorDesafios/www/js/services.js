@@ -4,6 +4,10 @@ angular.module('starter.services', [])
         var usuario = {};
         var FBRefUsuario;
 
+        usuario.getUsuario = function(){
+            return usuario;
+        }
+
         usuario.cargarUsuario = function(uid){
             console.log("uid", uid);
             FBRefUsuario = new Firebase("https://generadordesafios.firebaseio.com/Usuarios/" + uid + "/");

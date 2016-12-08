@@ -183,20 +183,6 @@ angular.module('starter.controllers', [])
 
 .controller('PerfilCtrl', function($scope) {
 
-})
-
-.controller('BuscarDesafiosCtrl', function($scope) {
-
-})
-
-.controller('MisDesafiosCtrl', function($scope) {
-
-})
-
-
-.controller('CrearDesafioCtrl', function($scope, $state, $stateParams) {
-  $scope.jugar = function() {
-    $state.go("app.jugar");
-  };  
-
 });
+
+

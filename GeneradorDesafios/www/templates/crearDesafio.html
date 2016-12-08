@@ -2,7 +2,15 @@
   <ion-content>
     <h1>Crear Desafio</h1>
 
-    <button  class="button button-block button-positive" ng-click="jugar()">CREAR</button>
+    <div class="item range range-positive">
+		    <span>1</span>
+		    <input type="range" min="1" max="300" ng-model="desafio.apuesta">
+		    <span>300</span>
+	</div>
+
+   Apostar:<span>{{desafio.apuesta}}</span>
+
+    <button  class="button button-block button-positive" ng-click="crearApuesta()">CREAR DESAFIO</button>
 
   </ion-content>
 </ion-view>

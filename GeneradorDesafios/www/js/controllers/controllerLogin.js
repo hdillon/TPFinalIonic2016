@@ -1,7 +1,7 @@
 angular.module('starter.controllerlogin', [])
 
 
-.controller('LoginCtrl', function($scope, $timeout, servicioABM, Usuario) {
+.controller('LoginCtrl', function($scope, $timeout, $state, servicioABM, Usuario, $ionicLoading) {
     $scope.loginData={};
     $scope.loginData.email = "dillonhoraciodavid@gmail.com";
     $scope.loginData.password = "34551422";
@@ -10,29 +10,52 @@ angular.module('starter.controllerlogin', [])
     $scope.mostrarVerificar = false;
 
     $scope.loguear = function() {
-      firebase.auth().signInWithEmailAndPassword($scope.loginData.email, $scope.loginData.password).catch(function(error) {
-      console.info("error", error);
-      alert("Datos incorrectos!");
-      }).then(function(respuesta){
+      //cuando preciona el boton registrarse bloqueo la interfaz con el spinner hasta que termine el proceso de registro
+      $ionicLoading.show({
+        content: 'Loading',
+        animation: 'fade-in',
+        showBackdrop: true,
+        maxWidth: 200,
+        showDelay: 2
+      });
+
+      try
+      {
+      firebase.auth().signInWithEmailAndPassword($scope.loginData.email, $scope.loginData.password)
+      .then(function(respuesta){
         console.info("RTA:", respuesta);
         //Cuando se loguea correctamente le seteo el uid al usuario
         Usuario.cargarUsuario(respuesta.uid);
-        alert("Bienvenido!");
         $timeout(function(){
           /*console.info("Esta Autenticado", respuesta.emailVerified);
           console.info("respuesta", respuesta);*/
           if(respuesta != undefined){
-            $scope.mostrarLogin = false;
+            /*$scope.mostrarLogin = false;
             if(respuesta.emailVerified)
             {
               $scope.mostrarLogOut = true;
             }else{
               $scope.mostrarVerificar = true;
-            }
+            }*/
+            $state.go('app.buscardesafios');
           }
         });
-        
-      });
+        $ionicLoading.hide();
+      },function (error){
+          $timeout(function() {
+            console.info("error: ", error);
+            $ionicLoading.hide();
+          }, 1000);
+        });
+      }catch(error){
+        console.log("No se pudo completar el login");
+        $ionicLoading.hide();
+      }
+
+      $timeout(function() {
+            console.info("usuario", Usuario.getUsuario());
+          }, 3000);
+    
     };
 
 //emailVerified: false
