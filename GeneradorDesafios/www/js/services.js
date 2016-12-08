@@ -63,6 +63,7 @@ angular.module('starter.services', [])
     this.altaUsuario = function(usuario){
         FBRef.child('Usuarios').child(usuario.uid)
         .set({ 
+          "nombre": usuario.nombre,
           "email": usuario.email,
           "credito": 1000
         });

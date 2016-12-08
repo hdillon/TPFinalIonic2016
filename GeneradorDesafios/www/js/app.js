@@ -1,4 +1,18 @@
-angular.module('starter', ['ionic','ionic-material','ionMdInput', 'firebase', 'starter.controllers', 'starter.controladorCreditos', 'starter.services', 'ngCordova', 'mdo-angular-cryptography'])
+angular.module('starter',
+ [
+ 'ionic','ionic-material',
+ 'ionMdInput',
+ 'firebase',
+ 'starter.controllers',
+ 'starter.controladorCreditos',
+ 'starter.controllerlogin',
+ 'starter.controllerregistro',
+ 'starter.services',
+ 'starter.miserviciofirebase',
+ 'starter.factoryUsuario',
+ 'ngCordova',
+ 'ngMessages',
+ 'mdo-angular-cryptography'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -30,6 +44,15 @@ angular.module('starter', ['ionic','ionic-material','ionMdInput', 'firebase', 's
         'menuContent': {
           templateUrl: 'templates/login.html',
           controller: 'LoginCtrl'
+        }
+      }
+    })
+    .state('app.registro', {
+      url: '/registro',
+      views: {
+        'menuContent': {
+          templateUrl: 'templates/registro.html',
+          controller: 'RegistroCtrl'
         }
       }
     })

@@ -1,0 +1,25 @@
+<ion-view view-title="Registro">
+  <ion-header-bar>
+    <h1 class="title">registro</h1>
+    <div class="buttons">
+      <button class="button button-clear" ng-click="closeLogin()">Close</button>
+    </div>
+  </ion-header-bar>
+    <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
+    <form name="myForm">
+      <div class="list">
+
+        <div class="margenfix">
+          <ion-md-input required maxlength="15"  placeholder="NickName" ng-model="loginData.nombre" highlight-color="balanced" type="text" ng-required="true"></ion-md-input>
+          <ion-md-input placeholder="Email" ng-model="loginData.email" highlight-color="balanced" type="text" ng-required="true"></ion-md-input>
+          <ion-md-input placeholder="Password" ng-model="loginData.password" highlight-color="energized" type="password" ng-required="true"></ion-md-input>
+        </div>
+
+        <label class="item" ng-if="myForm.$valid">
+          <button  class="button button-block button-balanced" ng-click="registrarse()">Registrarse</button>
+        </label>
+
+    </form>
+
+  </ion-content>
+</ion-view>

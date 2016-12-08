@@ -5,7 +5,7 @@ div.margenfix {
 }
 
 div.margenjugar {
-    margin-top: 100px;
+  
     margin-bottom: 100px;
 }
 
@@ -88,4 +88,28 @@ p {
 .social-login {
     position: fixed;
     bottom: 0;
+}
+
+
+label.item.has-error {
+  border-bottom: 2px solid red;
+}
+
+label.item.has-error-lr {
+  border-left: 2px solid red;
+  border-right: 2px solid red;
+}
+
+label.item.valid-lr {
+  border-left: 2px solid green;
+  border-right: 2px solid green;
+}
+
+.form-errors {
+  margin: 5px 0
+}
+
+.form-error {
+  padding: 2px 0 2px 16px;
+  color: red;
 }
