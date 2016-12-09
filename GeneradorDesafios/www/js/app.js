@@ -105,7 +105,8 @@ angular.module('starter',
       }
     })
     .state('app.jugar', {
-      url: '/jugar',
+      url: '/jugar/:partida',
+      cache : false,
       views: {
         'menuContent': {
           templateUrl: 'templates/jugar.html',

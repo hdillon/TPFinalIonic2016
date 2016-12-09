@@ -7,7 +7,7 @@ angular.module('starter.miserviciofirebase', [])
     this.Cargar = Cargar;
 
     function Guardar(ruta, objeto){
-      return firebase.database().ref(ruta).push(objeto);
+      return firebase.database().ref(ruta).set(objeto);
     }
 
     function Editar(objeto){

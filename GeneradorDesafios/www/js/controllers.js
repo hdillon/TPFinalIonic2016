@@ -1,6 +1,6 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
+.controller('AppCtrl', function($scope, $state, $ionicModal, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
   $scope.loginData = {};
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
@@ -15,14 +15,23 @@ for(var i = 0 ; i < 20 ; i++){
   }, 10000 * i);
 }
 */
+
+//Si un retador agrega una partida en la base y el creador del desafio es el current user se muestra el popUp para comenzar el juego
 MiServicioFB.Cargar('/Partidas')
   .on('child_added',function(snapshot)
   {
-    console.info("changed",snapshot.val());
-    console.info("crador",snapshot.val().creador.email);
-    console.info("currentusr",Usuario.getUsuario().email);
-    if(snapshot.val().creador.email == Usuario.getUsuario().email)
-      alert(snapshot.val().retador.nombre + " aceptó tu desafío!");
+    console.info("partida: ",snapshot.val());
+    if(snapshot.val().creador.email == Usuario.getUsuario().email){
+      var alertPopup = $ionicPopup.alert({
+         title: snapshot.val().retador.nombre + " aceptó tu desafío!",
+         okText: "JUGAR"
+      });
+
+      alertPopup.then(function(res) {
+        $state.go('app.jugar', {partida : JSON.stringify(snapshot.val())});
+
+      });
+    }
   });
   
 
@@ -127,30 +136,38 @@ MiServicioFB.Cargar('/Partidas')
 
 
 
-.controller('JugarCtrl', function($scope) {
+.controller('JugarCtrl', function($scope,$state, $stateParams, $timeout, Usuario, $ionicLoading, MiServicioFB) {
+  if($stateParams.partida != "")
+  {
+    var partida = JSON.parse($stateParams.partida);
+  }
+
   var ledButton = {
     value: '0',
     column: 0,
     row: 0
   };
 
-  var ledMatrixColumnsCount = 8;
-  var ledMatrixRowsCount = 8;
+  var contadorColumnas = 8;
+  var contadorFilas = 8;
+  var contadorApuestas = 0;
 
   $scope.spriteName = "Name";
-  $scope.ledMatrixRows = [];
+  $scope.matriz = [];
+  $scope.celdasSeleccionadas = [];
   $scope.code = "";
 
+//Inicializa la matriz con ceros:
   $scope.init = function() {
-    for (var rowIndex = 0; rowIndex < ledMatrixRowsCount; rowIndex++) {
-      var ledMatrixRow = [];
-      for (var columnIndex = 0; columnIndex < ledMatrixColumnsCount; columnIndex++) {
+    for (var indiceFila = 0; indiceFila < contadorFilas; indiceFila++) {
+      var arrayFila = [];
+      for (var indiceColumna = 0; indiceColumna < contadorColumnas; indiceColumna++) {
         var lb = angular.copy(ledButton);
-        lb.column = columnIndex;
-        lb.row = rowIndex;
-        ledMatrixRow.push(lb);
+        lb.column = indiceColumna;
+        lb.row = indiceFila;
+        arrayFila.push(lb);
       }
-      $scope.ledMatrixRows.push(ledMatrixRow);
+      $scope.matriz.push(arrayFila);
     }
     generateCode();
   };
@@ -161,17 +178,20 @@ MiServicioFB.Cargar('/Partidas')
     }
   }, true);
 
+//invierte el valor de la celda seleccionada
   $scope.setVal = function(btn) {
-    if (btn.value == '0') {
+    console.info("celda:", btn);
+    if (btn.value == '0' && contadorApuestas < 4) {//por ahora limito las apuestas en la matriz a 4
       btn.value = '1';
-    } else {
-      btn.value = '0';
+      $scope.celdasSeleccionadas.push(btn);
     }
-    generateCode();
+    contadorApuestas ++; 
+    console.info("celdas ", $scope.celdasSeleccionadas);
+    //generateCode();
   };
 
   $scope.clear = function() {
-    angular.forEach($scope.ledMatrixRows, function(val, key) {
+    angular.forEach($scope.matriz, function(val, key) {
       angular.forEach(val, function(col, key) {
         col.value = '0';
       });
@@ -182,19 +202,37 @@ MiServicioFB.Cargar('/Partidas')
   var generateCode = function() {
     $scope.code = "";
 
-    angular.forEach($scope.ledMatrixRows, function(val, key) {
+    angular.forEach($scope.matriz, function(val, key) {
       var codePart = "B";
       angular.forEach(val, function(col, key) {
 
         codePart += col.value;
       });
       $scope.code += codePart;
-      if(key!=(ledMatrixColumnsCount-1)){
+      if(key!=(contadorColumnas-1)){
         $scope.code += ",";
       }
     });
 
     $scope.code += "};";
+  };
+
+  $scope.confirmarApuesta = function() {
+    $ionicLoading.show({
+    content: 'Loading',
+    animation: 'fade-in',
+    showBackdrop: true,
+    maxWidth: 200,
+    showDelay: 2
+  });
+    MiServicioFB.Guardar("/Partidas/"+partida.id+"/retador/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
+    .then(function(resultado){
+      $ionicLoading.hide();
+    },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+    });  
+
   };
 
 })

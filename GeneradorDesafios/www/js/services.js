@@ -1,43 +1,5 @@
 angular.module('starter.services', [])
 
-.factory('Usuario', function ($crypto) {
-        var usuario = {};
-        var FBRefUsuario;
-
-        usuario.getUsuario = function(){
-            return usuario;
-        }
-
-        usuario.cargarUsuario = function(uid){
-            console.log("uid", uid);
-            FBRefUsuario = new Firebase("https://generadordesafios.firebaseio.com/Usuarios/" + uid + "/");
-
-            FBRefUsuario.once("value", function(snapshot) {
-            console.info("Usuario", snapshot.val());
-            usuario = snapshot.val();
-
-            console.info("snap: ", usuario);
-            console.info("email: ", usuario.email);
-            console.info("credito: ", usuario.credito);
-            
-            });
-
-        }
-
-        usuario.cargarCredito = function (codigo) {
-            var codigoDesencriptado = $crypto.decrypt(codigo);
-            var cantidadCredito = codigoDesencriptado.split("$");
-            cantidadCredito = usuario.credito + Number(cantidadCredito[1]); //sumo el credito que ya tenía el usuario con el del código QR
-            FBRefUsuario.update({
-                credito : cantidadCredito
-            });
-        }
-
-
-
-        return usuario;
-})
-
 .service('servicioABM', function ($crypto, Usuario, $firebaseArray) {
     var FBRef = new Firebase("https://generadordesafios.firebaseio.com/");
 
@@ -66,7 +28,8 @@ angular.module('starter.services', [])
 
     this.altaUsuario = function(usuario){
         FBRef.child('Usuarios').child(usuario.uid)
-        .set({ 
+        .set({
+          "id": usuario.uid, 
           "nombre": usuario.nombre,
           "email": usuario.email,
           "credito": 1000

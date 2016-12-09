@@ -35,14 +35,14 @@ angular.module('starter.controllerdesafios', [])
 
 	$scope.aceptarDesafio = function(desafio) {
   		//alert("Esperar que " + desafio.usuario.nombre + " responda...");
-      var partida = {};
-      partida.creador = desafio.usuario;
-      partida.retador = Usuario.getUsuario();
-      partida.apuesta = desafio.apuesta;
-      console.info("desa ", desafio);
-      MiServicioFB.Guardar("/Partidas/", partida)
+      $scope.partida = {};
+      $scope.partida.creador = desafio.usuario;
+      $scope.partida.retador = Usuario.getUsuario();
+      $scope.partida.apuesta = desafio.apuesta;
+      $scope.partida.id = desafio.id;
+      MiServicioFB.Guardar("/Partidas/"+$scope.partida.id, $scope.partida)
     .then(function(resultado){
-      $state.go('app.jugar');
+      $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
     },function (error){
         console.log("Error!!");
   
@@ -78,11 +78,14 @@ angular.module('starter.controllerdesafios', [])
 		showDelay: 2
 	});
 
+    
     console.info("user",Usuario.getUsuario());
     $scope.desafio.usuario = Usuario.getUsuario();
     $scope.desafio.activo = true;
+    $scope.desafio.fecha = new Date().valueOf();
+    $scope.desafio.id = $scope.desafio.usuario.nombre+$scope.desafio.fecha;
 
-    MiServicioFB.Guardar("/Desafios/", $scope.desafio)
+    MiServicioFB.Guardar("/Desafios/"+$scope.desafio.usuario.nombre+$scope.desafio.fecha+"/", $scope.desafio)
     .then(function(resultado){
     	$ionicLoading.hide();
     	$state.go('app.buscardesafios');
