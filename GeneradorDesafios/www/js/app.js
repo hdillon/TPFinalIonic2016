@@ -13,7 +13,8 @@ angular.module('starter',
  'starter.factoryUsuario',
  'ngCordova',
  'ngMessages',
- 'mdo-angular-cryptography'])
+ 'mdo-angular-cryptography',
+ 'ng-mfb'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

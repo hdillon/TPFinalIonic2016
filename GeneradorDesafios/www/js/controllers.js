@@ -1,12 +1,30 @@
 angular.module('starter.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicPopup) {
+.controller('AppCtrl', function($scope, $ionicModal, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
   $scope.loginData = {};
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
   }).then(function(modal) {
     $scope.modal = modal;
   });
+
+/*
+for(var i = 0 ; i < 20 ; i++){
+  $timeout(function () {
+    console.info("USUARIO: ", Usuario.getUsuario());
+  }, 10000 * i);
+}
+*/
+MiServicioFB.Cargar('/Partidas')
+  .on('child_added',function(snapshot)
+  {
+    console.info("changed",snapshot.val());
+    console.info("crador",snapshot.val().creador.email);
+    console.info("currentusr",Usuario.getUsuario().email);
+    if(snapshot.val().creador.email == Usuario.getUsuario().email)
+      alert(snapshot.val().retador.nombre + " aceptó tu desafío!");
+  });
+  
 
   $scope.isExpanded = false;
     $scope.hasHeaderFabLeft = true;

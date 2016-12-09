@@ -10,6 +10,8 @@ angular.module('starter.controllerdesafios', [])
     showDelay: 2
   });
 
+  console.info(Usuario.getUsuario());
+
 	$scope.ListadoDesafios = [];
 	var i = 0;
 	MiServicioFB.Cargar('/Desafios')
@@ -33,7 +35,29 @@ angular.module('starter.controllerdesafios', [])
 
 	$scope.aceptarDesafio = function(desafio) {
   		//alert("Esperar que " + desafio.usuario.nombre + " responda...");
+      var partida = {};
+      partida.creador = desafio.usuario;
+      partida.retador = Usuario.getUsuario();
+      partida.apuesta = desafio.apuesta;
+      console.info("desa ", desafio);
+      MiServicioFB.Guardar("/Partidas/", partida)
+    .then(function(resultado){
+      $state.go('app.jugar');
+    },function (error){
+        console.log("Error!!");
+  
+    });  
+      
 	}
+
+  $scope.crearDesafio = function() {
+      $state.go('app.creardesafios');
+  }
+
+  $scope.actualizar = function() {
+       $state.reload();
+  }
+
 })
 
 
