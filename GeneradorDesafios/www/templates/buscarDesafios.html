@@ -1,5 +1,35 @@
 <ion-view view-title="Browse">
-  <ion-content>
-    <h1>Buscar Desafios</h1>
+  <ion-content class="animate-fade-slide-in">
+    <div ng-repeat="desafio in ListadoDesafios" >
+        <div  class="list half">
+              <div ng-click="aceptarDesafio(desafio)" class="card card-gallery item item-text-wrap">
+                  <div class="ink dark-bg">
+                      <h2>Desafiar a {{desafio.usuario.nombre}}</h2>
+                  </div>
+                  <div class="item tabs tabs-secondary tabs-icon-left">
+                      <a class="tab-item stable-bg assertive">
+                          <i class="icon ion-social-usd"></i>
+                          {{desafio.apuesta}}
+                      </a>
+                      <a class="tab-item stable-bg positive-900">
+                          <i class="icon ion-chatbubbles"></i>
+                          2
+                      </a>
+                  </div>
+              </div>
+        </div>
+      </div>
+
+<button class="button button-float" >
+        <i class="icon ion-plus"></i>
+      </button>
+
   </ion-content>
+
+  
 </ion-view>
+
+
+
+
+

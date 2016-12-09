@@ -77,6 +77,7 @@ angular.module('starter',
     })
     .state('app.buscardesafios', {
       url: '/buscardesafios',
+      cache: false,
       views: {
         'menuContent': {
           templateUrl: 'templates/buscarDesafios.html',
