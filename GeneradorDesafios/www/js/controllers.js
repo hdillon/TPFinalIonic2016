@@ -2,6 +2,7 @@ angular.module('starter.controllers', [])
 
 .controller('AppCtrl', function($scope, $state, $ionicModal, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
   $scope.loginData = {};
+  $scope.partida = {};
   $ionicModal.fromTemplateUrl('templates/login.html', {
     scope: $scope
   }).then(function(modal) {
@@ -22,13 +23,15 @@ MiServicioFB.Cargar('/Partidas')
   {
     console.info("partida: ",snapshot.val());
     if(snapshot.val().creador.email == Usuario.getUsuario().email){
+      $scope.partida = snapshot.val();
+      $scope.partida.player = 'creador';
       var alertPopup = $ionicPopup.alert({
          title: snapshot.val().retador.nombre + " aceptó tu desafío!",
          okText: "JUGAR"
       });
 
       alertPopup.then(function(res) {
-        $state.go('app.jugar', {partida : JSON.stringify(snapshot.val())});
+        $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
 
       });
     }
@@ -136,10 +139,10 @@ MiServicioFB.Cargar('/Partidas')
 
 
 
-.controller('JugarCtrl', function($scope,$state, $stateParams, $timeout, Usuario, $ionicLoading, MiServicioFB) {
+.controller('JugarCtrl', function($scope,$state, $stateParams, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
   if($stateParams.partida != "")
   {
-    var partida = JSON.parse($stateParams.partida);
+    $scope.partida = JSON.parse($stateParams.partida);
   }
 
   var ledButton = {
@@ -152,10 +155,10 @@ MiServicioFB.Cargar('/Partidas')
   var contadorFilas = 8;
   var contadorApuestas = 0;
 
-  $scope.spriteName = "Name";
+  //$scope.spriteName = "Name";
   $scope.matriz = [];
   $scope.celdasSeleccionadas = [];
-  $scope.code = "";
+  //$scope.code = "";
 
 //Inicializa la matriz con ceros:
   $scope.init = function() {
@@ -169,14 +172,14 @@ MiServicioFB.Cargar('/Partidas')
       }
       $scope.matriz.push(arrayFila);
     }
-    generateCode();
+    //generateCode();
   };
 
-  $scope.$watch('spriteName', function(newValue, oldValue) {
+  /*$scope.$watch('spriteName', function(newValue, oldValue) {
     if (newValue != oldValue) {
       generateCode();
     }
-  }, true);
+  }, true);*/
 
 //invierte el valor de la celda seleccionada
   $scope.setVal = function(btn) {
@@ -196,10 +199,10 @@ MiServicioFB.Cargar('/Partidas')
         col.value = '0';
       });
     });
-    generateCode();
+    //generateCode();
   };
 
-  var generateCode = function() {
+  /*var generateCode = function() {
     $scope.code = "";
 
     angular.forEach($scope.matriz, function(val, key) {
@@ -215,7 +218,7 @@ MiServicioFB.Cargar('/Partidas')
     });
 
     $scope.code += "};";
-  };
+  };*/
 
   $scope.confirmarApuesta = function() {
     $ionicLoading.show({
@@ -225,15 +228,74 @@ MiServicioFB.Cargar('/Partidas')
     maxWidth: 200,
     showDelay: 2
   });
-    MiServicioFB.Guardar("/Partidas/"+partida.id+"/retador/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
     .then(function(resultado){
       $ionicLoading.hide();
+      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
     },function (error){
         console.log("Error!!");
         $ionicLoading.hide();
     });  
 
   };
+
+
+  //timer
+  $scope.counter = 30;
+    var mytimeout = null; // the current timeoutID
+    // actual timer method, counts down every second, stops on zero
+    $scope.onTimeout = function() {
+        if($scope.counter ===  0) {
+            $scope.$broadcast('timer-stopped', 0);
+            $timeout.cancel(mytimeout);
+            return;
+        }
+        $scope.counter--;
+        mytimeout = $timeout($scope.onTimeout, 1000);
+    };
+    $scope.startTimer = function() {
+        mytimeout = $timeout($scope.onTimeout, 1000);
+    };
+    // stops and resets the current timer
+    $scope.stopTimer = function() {
+        $scope.$broadcast('timer-stopped', $scope.counter);
+        $scope.counter = 30;
+        $timeout.cancel(mytimeout);
+    };
+    // triggered, when the timer stops, you can do something here, maybe show a visual indicator or vibrate the device
+    $scope.$on('timer-stopped', function(event, remaining) {
+        if(remaining === 0) {
+          var alertPopup = $ionicPopup.alert({
+           title: 'Se te agotó el tiempo! :(',
+           okText: "ACEPTAR"
+          });
+
+          alertPopup.then(function(res) {
+            $state.go('app.buscardesafios');//dar por ganado al contrario!
+
+          });
+        }
+    });
+
+  $scope.startTimer();//apenas carga la vista del juego comienza a contar el tiempo
+
+
+    MiServicioFB.Cargar('/Partidas')//capturo cada vez que hay un cambio en la partida
+  .on('child_changed',function(snapshot)
+  {
+    console.info("partida: ",snapshot.val());
+    if(snapshot.val().id == $scope.partida.id){
+      if($scope.partida.player == 'creador')  
+        var alertPopup = $ionicPopup.alert({title: snapshot.val().retador.nombre + " cambio!", okText: "JUGAR"});
+      else
+        var alertPopup = $ionicPopup.alert({title: snapshot.val().creador.nombre + " cambio!", okText: "JUGAR"});
+      console.log(JSON.parse(snapshot.val().retador.estrategia));
+      alertPopup.then(function(res) {
+        //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
+
+      });
+    }
+  });
 
 })
 

@@ -42,6 +42,7 @@ angular.module('starter.controllerdesafios', [])
       $scope.partida.id = desafio.id;
       MiServicioFB.Guardar("/Partidas/"+$scope.partida.id, $scope.partida)
     .then(function(resultado){
+      $scope.partida.player = 'retador';
       $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
     },function (error){
         console.log("Error!!");
