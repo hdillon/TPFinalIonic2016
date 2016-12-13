@@ -8,8 +8,9 @@
         <div class="form-group">
           <table ng-init="init()">
             <tr ng-repeat="row in matriz">
-              <td ng-repeat="col in row"><button class="button button-positive" ng-class="{'button-balanced': col.value=='1'}" ng-click="setVal(col)">{{col.value}}</button></td>
+              <td ng-repeat="col in row"><button class="button button-positive" ng-class="{'button-balanced': col.value=='1'}" ng-click="this[metodoMatriz](col)">{{col.value}}</button></td>
             </tr>
+            <!-- con el this[] voy cambiando el método dinamicámente -->
           </table>  
         </div>
 

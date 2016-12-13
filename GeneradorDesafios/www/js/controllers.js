@@ -158,7 +158,8 @@ MiServicioFB.Cargar('/Partidas')
   //$scope.spriteName = "Name";
   $scope.matriz = [];
   $scope.celdasSeleccionadas = [];
-  //$scope.code = "";
+  $scope.disparos = [];
+  $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
 
 //Inicializa la matriz con ceros:
   $scope.init = function() {
@@ -180,6 +181,30 @@ MiServicioFB.Cargar('/Partidas')
       generateCode();
     }
   }, true);*/
+
+//Guardo en la base cada vez que el jugador dispara
+  $scope.guardarJugada = function(btn) {
+    console.info("celda:", btn);
+    $scope.disparos.push(btn);//voy acumulando los disparos del player
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", JSON.stringify($scope.disparos))
+    .then(function(resultado){
+      $ionicLoading.hide();
+      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+    },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+    }); 
+    //voy actualizando el flag en la base para saber quién fué el último que jugó (creador ó retador)
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ultimoenjugar/", $scope.partida.player)
+    .then(function(resultado){
+      $ionicLoading.hide();
+      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+    },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+    });   
+  };
+
 
 //invierte el valor de la celda seleccionada
   $scope.setVal = function(btn) {
@@ -231,6 +256,7 @@ MiServicioFB.Cargar('/Partidas')
     MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
     .then(function(resultado){
       $ionicLoading.hide();
+      $scope.metodoMatriz = "guardarJugada";//una vez que confirma la apuesta el método por defecto en la matriz va a ser el que guarde cada disparo
       $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
     },function (error){
         console.log("Error!!");
@@ -239,28 +265,49 @@ MiServicioFB.Cargar('/Partidas')
 
   };
 
+//CON ESTE EVENTO VOY MANEJANDO LOS TURNOS DE C/PLAYER
+  MiServicioFB.Cargar('/Partidas')//capturo cada vez que hay un cambio en alguna partida
+  .on('child_changed',function(snapshot)
+  {
+    console.info("partida: ",snapshot.val());
+    if(snapshot.val().id == $scope.partida.id){
+      if($scope.partida.player != snapshot.val().ultimoenjugar){//acá verifico si el que disparó el evento es el otro usuario!  
+        var alertPopup = $ionicPopup.alert({title: snapshot.val().ultimoenjugar + " Jugó!", okText: "JUGAR"});
+        $scope.startTimer();
+        //ACÁ DEBERÍA DESBLOQUEAR LA PANTALLA Y COMENZAR A CORRER  EL TIMER
+      }else{
+        $scope.stopTimer();
+        //ACÁ DEBERÍA BLOQUEAR LA PANTALLA DEL QUE JUGÓ QUE QUEDA A LA ESPERA DE QUE JUEGUE EL CONTRARIO
+      }
+      console.log(JSON.parse(snapshot.val().retador.estrategia));
+      alertPopup.then(function(res) {
+        //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
+      });
+    }
+  });
 
-  //timer
+
+  //TIMER:
   $scope.counter = 30;
-    var mytimeout = null; // the current timeoutID
-    // actual timer method, counts down every second, stops on zero
+  var mytimeout = null; // the current timeoutID
     $scope.onTimeout = function() {
-        if($scope.counter ===  0) {
-            $scope.$broadcast('timer-stopped', 0);
-            $timeout.cancel(mytimeout);
-            return;
-        }
-        $scope.counter--;
-        mytimeout = $timeout($scope.onTimeout, 1000);
+      if($scope.counter ===  0) {
+          $scope.$broadcast('timer-stopped', 0);
+          $timeout.cancel(mytimeout);
+          return;
+      }
+      $scope.counter--;
+      mytimeout = $timeout($scope.onTimeout, 1000);
     };
+
     $scope.startTimer = function() {
-        mytimeout = $timeout($scope.onTimeout, 1000);
+      mytimeout = $timeout($scope.onTimeout, 1000);
     };
     // stops and resets the current timer
     $scope.stopTimer = function() {
-        $scope.$broadcast('timer-stopped', $scope.counter);
-        $scope.counter = 30;
-        $timeout.cancel(mytimeout);
+      $scope.$broadcast('timer-stopped', $scope.counter);
+      $scope.counter = 30;
+      $timeout.cancel(mytimeout);
     };
     // triggered, when the timer stops, you can do something here, maybe show a visual indicator or vibrate the device
     $scope.$on('timer-stopped', function(event, remaining) {
@@ -269,33 +316,13 @@ MiServicioFB.Cargar('/Partidas')
            title: 'Se te agotó el tiempo! :(',
            okText: "ACEPTAR"
           });
-
           alertPopup.then(function(res) {
-            $state.go('app.buscardesafios');//dar por ganado al contrario!
-
+            $state.go('app.buscardesafios');//TODO:dar por ganado al contrario!
           });
         }
     });
 
   $scope.startTimer();//apenas carga la vista del juego comienza a contar el tiempo
-
-
-    MiServicioFB.Cargar('/Partidas')//capturo cada vez que hay un cambio en la partida
-  .on('child_changed',function(snapshot)
-  {
-    console.info("partida: ",snapshot.val());
-    if(snapshot.val().id == $scope.partida.id){
-      if($scope.partida.player == 'creador')  
-        var alertPopup = $ionicPopup.alert({title: snapshot.val().retador.nombre + " cambio!", okText: "JUGAR"});
-      else
-        var alertPopup = $ionicPopup.alert({title: snapshot.val().creador.nombre + " cambio!", okText: "JUGAR"});
-      console.log(JSON.parse(snapshot.val().retador.estrategia));
-      alertPopup.then(function(res) {
-        //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
-
-      });
-    }
-  });
 
 })
 
