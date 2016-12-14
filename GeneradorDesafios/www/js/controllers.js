@@ -145,21 +145,19 @@ MiServicioFB.Cargar('/Partidas')
     $scope.partida = JSON.parse($stateParams.partida);
   }
 
+  $scope.matriz = [];
+  $scope.celdasSeleccionadas = [];
+  $scope.disparos = [];
+  $scope.flagInformarAlUsuario = false;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
+  var contadorColumnas = 8;
+  var contadorFilas = 8;
+  var contadorApuestas = 0;
+  $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
   var ledButton = {
     value: '0',
     column: 0,
     row: 0
   };
-
-  var contadorColumnas = 8;
-  var contadorFilas = 8;
-  var contadorApuestas = 0;
-
-  //$scope.spriteName = "Name";
-  $scope.matriz = [];
-  $scope.celdasSeleccionadas = [];
-  $scope.disparos = [];
-  $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
 
 //Inicializa la matriz con ceros:
   $scope.init = function() {
@@ -173,38 +171,7 @@ MiServicioFB.Cargar('/Partidas')
       }
       $scope.matriz.push(arrayFila);
     }
-    //generateCode();
   };
-
-  /*$scope.$watch('spriteName', function(newValue, oldValue) {
-    if (newValue != oldValue) {
-      generateCode();
-    }
-  }, true);*/
-
-//Guardo en la base cada vez que el jugador dispara
-  $scope.guardarJugada = function(btn) {
-    console.info("celda:", btn);
-    $scope.disparos.push(btn);//voy acumulando los disparos del player
-    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", JSON.stringify($scope.disparos))
-    .then(function(resultado){
-      $ionicLoading.hide();
-      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
-    },function (error){
-        console.log("Error!!");
-        $ionicLoading.hide();
-    }); 
-    //voy actualizando el flag en la base para saber quién fué el último que jugó (creador ó retador)
-    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ultimoenjugar/", $scope.partida.player)
-    .then(function(resultado){
-      $ionicLoading.hide();
-      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
-    },function (error){
-        console.log("Error!!");
-        $ionicLoading.hide();
-    });   
-  };
-
 
 //invierte el valor de la celda seleccionada
   $scope.setVal = function(btn) {
@@ -215,7 +182,6 @@ MiServicioFB.Cargar('/Partidas')
     }
     contadorApuestas ++; 
     console.info("celdas ", $scope.celdasSeleccionadas);
-    //generateCode();
   };
 
   $scope.clear = function() {
@@ -224,7 +190,6 @@ MiServicioFB.Cargar('/Partidas')
         col.value = '0';
       });
     });
-    //generateCode();
   };
 
   /*var generateCode = function() {
@@ -246,13 +211,7 @@ MiServicioFB.Cargar('/Partidas')
   };*/
 
   $scope.confirmarApuesta = function() {
-    $ionicLoading.show({
-    content: 'Loading',
-    animation: 'fade-in',
-    showBackdrop: true,
-    maxWidth: 200,
-    showDelay: 2
-  });
+    $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
     MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
     .then(function(resultado){
       $ionicLoading.hide();
@@ -262,17 +221,45 @@ MiServicioFB.Cargar('/Partidas')
         console.log("Error!!");
         $ionicLoading.hide();
     });  
+  };
 
+  //Guardo en la base cada vez que el jugador dispara
+  $scope.guardarJugada = function(btn) {
+    console.info("celda:", btn);
+    $scope.disparos.push(btn);//voy acumulando los disparos del player
+    $scope.flagInformarAlUsuario = false;
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", JSON.stringify($scope.disparos))
+    .then(function(resultado){
+      $ionicLoading.hide();
+      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+    },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+    }); 
+ 
+    $timeout(function () {//Le agrego un timeout de 2 seg para darle tiempo a que se ejecute completamente los eventos que guardan el ultimo en jugar
+    //voy actualizando el flag en la base para saber quién fué el último que jugó (creador ó retador)
+    $scope.flagInformarAlUsuario = true;
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ultimoenjugar/", $scope.partida.player)
+    .then(function(resultado){
+      $ionicLoading.hide();
+      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+    },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+    });  
+    }, 2000); 
   };
 
 //CON ESTE EVENTO VOY MANEJANDO LOS TURNOS DE C/PLAYER
   MiServicioFB.Cargar('/Partidas')//capturo cada vez que hay un cambio en alguna partida
   .on('child_changed',function(snapshot)
   {
-    console.info("partida: ",snapshot.val());
+    console.info("$scope.flagInformarAlUsuario: ",$scope.flagInformarAlUsuario);
     if(snapshot.val().id == $scope.partida.id){
-      if($scope.partida.player != snapshot.val().ultimoenjugar){//acá verifico si el que disparó el evento es el otro usuario!  
+      if($scope.flagInformarAlUsuario && $scope.partida.player != snapshot.val().ultimoenjugar && snapshot.val().ultimoenjugar != undefined){//acá verifico si el que disparó el evento es el otro usuario!  
         var alertPopup = $ionicPopup.alert({title: snapshot.val().ultimoenjugar + " Jugó!", okText: "JUGAR"});
+        $scope.stopTimer();
         $scope.startTimer();
         //ACÁ DEBERÍA DESBLOQUEAR LA PANTALLA Y COMENZAR A CORRER  EL TIMER
       }else{
@@ -280,15 +267,15 @@ MiServicioFB.Cargar('/Partidas')
         //ACÁ DEBERÍA BLOQUEAR LA PANTALLA DEL QUE JUGÓ QUE QUEDA A LA ESPERA DE QUE JUEGUE EL CONTRARIO
       }
       console.log(JSON.parse(snapshot.val().retador.estrategia));
-      alertPopup.then(function(res) {
+     /* alertPopup.then(function(res) { ESTE POPUP FALLA SI ENTRA POR EL ELSE PORQUE NO VA A ESTAR DEFINIDO
         //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
-      });
+      });*/
     }
   });
 
 
   //TIMER:
-  $scope.counter = 30;
+  $scope.counter = 9000;
   var mytimeout = null; // the current timeoutID
     $scope.onTimeout = function() {
       if($scope.counter ===  0) {
@@ -306,7 +293,7 @@ MiServicioFB.Cargar('/Partidas')
     // stops and resets the current timer
     $scope.stopTimer = function() {
       $scope.$broadcast('timer-stopped', $scope.counter);
-      $scope.counter = 30;
+      $scope.counter = 9000;
       $timeout.cancel(mytimeout);
     };
     // triggered, when the timer stops, you can do something here, maybe show a visual indicator or vibrate the device
