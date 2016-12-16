@@ -152,9 +152,10 @@ angular.module('starter.controllers', [])
   $scope.disparoRival = "";
   $scope.arrayLetras = ['A','B','C','D','E'];
   $scope.flagInformarAlUsuario = true;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
+  $scope.flagConfirmoEstrategia = false;
   var contadorColumnas = 5;
   var contadorFilas = 5;
-  var contadorApuestas = 0;
+  $scope.contadorBarcosEstrategia = 0;
   $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
   var ledButton = {value: '0', column: 0, row: 0 };
 
@@ -175,10 +176,10 @@ angular.module('starter.controllers', [])
 //invierte el valor de la celda seleccionada
   $scope.setVal = function(btn) {
     console.info("celda:", btn);
-    if (btn.value == '0' && contadorApuestas < 4) {//por ahora limito las apuestas en la matriz a 4
+    if (btn.value == '0' && $scope.contadorBarcosEstrategia < 4) {//por ahora limito las apuestas en la matriz a 4
       btn.value = '1';
 
-      switch(contadorApuestas){
+      switch($scope.contadorBarcosEstrategia){
         case 0:
           $scope._misBarcos.jugada1 = (btn.column+btn.row);
         break;
@@ -192,12 +193,14 @@ angular.module('starter.controllers', [])
           $scope._misBarcos.jugada4 = (btn.column+btn.row);
         break;
       }
+      $scope.contadorBarcosEstrategia ++; 
     }
-    contadorApuestas ++; 
-    console.info("Mi Estrategia", $scope._misBarcos);
+    console.info("esfdfsf:", $scope.contadorBarcosEstrategia);
+    //console.info("Mi Estrategia", $scope._misBarcos);
   };
 
   $scope.clear = function() {//Limpio la matriz
+    $scope.contadorBarcosEstrategia ++; 
     angular.forEach($scope.matriz, function(val, key) {
       angular.forEach(val, function(col, key) {
         col.value = '0';
@@ -206,19 +209,16 @@ angular.module('starter.controllers', [])
   };
 
   $scope.confirmarEstrategia = function() {
-    $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
     MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", $scope._misBarcos)
     .then(function(resultado){
-      $ionicLoading.hide();
       $scope.metodoMatriz = "guardarJugada";//una vez que confirma la apuesta el método por defecto en la matriz va a ser el que guarde cada disparo
       $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
       if($scope.partida.player == "retador")//El primer turno siempre es para el creador de la partida
         $ionicLoading.show({content: 'Loading', template: 'Esperando que ' + $scope.partida[$scope.partida.rival].nombre + ' juegue...', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
-      else
-        var alertPopup = $ionicPopup.alert({title: "INICIA EL JUEGO!", okText: "ACEPTAR"});
+
     },function (error){
-        console.log("Error!!");
-        $ionicLoading.hide();
+      console.log("Error!!");
+      $ionicLoading.hide();
     });  
   };
 
@@ -287,6 +287,20 @@ angular.module('starter.controllers', [])
           $ionicLoading.hide();
           $ionicLoading.show({content: 'Loading', template: 'Esperando que ' + $scope.partida[$scope.partida.rival].nombre + ' juegue...', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
         }
+
+        //Verifico que el retador haya confirmado la estrategia antes de dejar jugar al creador
+        if(!$scope.flagConfirmoEstrategia && $scope.partida.player == "creador"){
+          if(snapshot.val()[$scope.partida.rival].estrategia == undefined)
+            $ionicLoading.show({content: 'Loading', template: 'Esperando que ' + $scope.partida[$scope.partida.rival].nombre + ' confirme su estrategia...', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
+          else{
+            $ionicLoading.hide();
+            $scope.flagConfirmoEstrategia = true;
+            var alertPopup = $ionicPopup.alert({title: "INICIA EL JUEGO!", okText: "ACEPTAR"});
+          }
+        }
+        
+
+
       }
 
     }

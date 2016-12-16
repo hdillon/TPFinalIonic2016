@@ -1,15 +1,16 @@
 <ion-view view-title="Browse">
-  <ion-content>
-    <h1>Alta Creditos</h1>
+  <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
     <form >
       <div class="list">
-        <label class="item item-input">
-          <span class="input-label">Cantidad</span>
-          <input type="text" ng-model="credito.cantidad">
+
+        <div class="margenfix">
+          <ion-md-input placeholder="Cantidad" ng-model="credito.cantidad" highlight-color="balanced" type="text"></ion-md-input>
+        </div>
+
+        <label class="item">
+          <button  class="button button-block button-balanced" ng-click="altaCredito()">Confirmar alta</button>
         </label>
-        <label class="item">       
-    		<button  class="button button-block button-balanced" ng-click="altaCredito()">Confirmar</button>
-        </label>
+      </div>
     </form>
   </ion-content>
 </ion-view>
