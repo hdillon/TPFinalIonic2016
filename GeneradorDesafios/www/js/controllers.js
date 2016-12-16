@@ -25,6 +25,7 @@ MiServicioFB.Cargar('/Partidas')
     if(snapshot.val().creador.email == Usuario.getUsuario().email){
       $scope.partida = snapshot.val();
       $scope.partida.player = 'creador';
+      $scope.partida.rival = 'retador';
       var alertPopup = $ionicPopup.alert({
          title: snapshot.val().retador.nombre + " aceptó tu desafío!",
          okText: "JUGAR"
@@ -146,11 +147,15 @@ MiServicioFB.Cargar('/Partidas')
   }
 
   $scope.matriz = [];
-  $scope.celdasSeleccionadas = [];
-  $scope.disparos = [];
+  $scope._misBarcos = {};
+  $scope._disparos = {};
+  $scope.contadorDisparosPlayer = 0;
+  $scope.contadorDisparosRival = 0;
+  $scope.disparoRival = "";
+  $scope.arrayLetras = ['A','B','C','D','E'];
   $scope.flagInformarAlUsuario = false;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
-  var contadorColumnas = 8;
-  var contadorFilas = 8;
+  var contadorColumnas = 5;
+  var contadorFilas = 5;
   var contadorApuestas = 0;
   $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
   var ledButton = {
@@ -165,8 +170,8 @@ MiServicioFB.Cargar('/Partidas')
       var arrayFila = [];
       for (var indiceColumna = 0; indiceColumna < contadorColumnas; indiceColumna++) {
         var lb = angular.copy(ledButton);
-        lb.column = indiceColumna;
-        lb.row = indiceFila;
+        lb.column = $scope.arrayLetras[indiceColumna];
+        lb.row = indiceFila+1;
         arrayFila.push(lb);
       }
       $scope.matriz.push(arrayFila);
@@ -178,10 +183,24 @@ MiServicioFB.Cargar('/Partidas')
     console.info("celda:", btn);
     if (btn.value == '0' && contadorApuestas < 4) {//por ahora limito las apuestas en la matriz a 4
       btn.value = '1';
-      $scope.celdasSeleccionadas.push(btn);
+
+      switch(contadorApuestas){
+        case 0:
+          $scope._misBarcos.jugada1 = (btn.column+btn.row);
+        break;
+        case 1:
+          $scope._misBarcos.jugada2 = (btn.column+btn.row);
+        break;
+        case 2:
+          $scope._misBarcos.jugada3 = (btn.column+btn.row);
+        break;
+        case 3:
+          $scope._misBarcos.jugada4 = (btn.column+btn.row);
+        break;
+      }
     }
     contadorApuestas ++; 
-    console.info("celdas ", $scope.celdasSeleccionadas);
+    console.info("Mi Estrategia", $scope._misBarcos);
   };
 
   $scope.clear = function() {
@@ -212,7 +231,7 @@ MiServicioFB.Cargar('/Partidas')
 
   $scope.confirmarApuesta = function() {
     $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
-    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", JSON.stringify($scope.celdasSeleccionadas))
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", $scope._misBarcos)
     .then(function(resultado){
       $ionicLoading.hide();
       $scope.metodoMatriz = "guardarJugada";//una vez que confirma la apuesta el método por defecto en la matriz va a ser el que guarde cada disparo
@@ -226,9 +245,10 @@ MiServicioFB.Cargar('/Partidas')
   //Guardo en la base cada vez que el jugador dispara
   $scope.guardarJugada = function(btn) {
     console.info("celda:", btn);
-    $scope.disparos.push(btn);//voy acumulando los disparos del player
+    $scope._disparos[$scope.contadorDisparosPlayer] = btn.column+btn.row;//voy acumulando los disparos del player
+    $scope.contadorDisparosPlayer ++;
     $scope.flagInformarAlUsuario = false;
-    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", JSON.stringify($scope.disparos))
+    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", $scope._disparos)
     .then(function(resultado){
       $ionicLoading.hide();
       $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
@@ -255,23 +275,88 @@ MiServicioFB.Cargar('/Partidas')
   MiServicioFB.Cargar('/Partidas')//capturo cada vez que hay un cambio en alguna partida
   .on('child_changed',function(snapshot)
   {
-    console.info("$scope.flagInformarAlUsuario: ",$scope.flagInformarAlUsuario);
     if(snapshot.val().id == $scope.partida.id){
+      if(snapshot.val().ganador != undefined){//Siempre que se actualiza algo en la partida verifico si ya ganó alguno
+        if(snapshot.val().ganador == $scope.partida.player){
+          var alertPopup = $ionicPopup.alert({title: "GANASTE!", okText: "ACEPTAR"});
+          $scope.actualizarCredito("ganaste");
+        }else{
+          var alertPopup = $ionicPopup.alert({title: "PERDISTE! :(", okText: "ACEPTAR"});
+          $scope.actualizarCredito("perdiste");
+        }
+        alertPopup.then(function(res) {
+            $state.go('app.buscardesafios');
+        });
+      }
+
       if($scope.flagInformarAlUsuario && $scope.partida.player != snapshot.val().ultimoenjugar && snapshot.val().ultimoenjugar != undefined){//acá verifico si el que disparó el evento es el otro usuario!  
         var alertPopup = $ionicPopup.alert({title: snapshot.val().ultimoenjugar + " Jugó!", okText: "JUGAR"});
         $scope.stopTimer();
         $scope.startTimer();
         //ACÁ DEBERÍA DESBLOQUEAR LA PANTALLA Y COMENZAR A CORRER  EL TIMER
+        console.info("ULTIMO DISPARO DEL RIVAL: ", snapshot.val()[$scope.partida.rival].disparos[$scope.contadorDisparosRival]);
+        $scope.disparoRival = snapshot.val()[$scope.partida.rival].disparos[$scope.contadorDisparosRival];
+        $scope.contadorDisparosRival ++;
+
+        $scope.verificarSiPerdi();
+        
+        
+
       }else{
         $scope.stopTimer();
         //ACÁ DEBERÍA BLOQUEAR LA PANTALLA DEL QUE JUGÓ QUE QUEDA A LA ESPERA DE QUE JUEGUE EL CONTRARIO
       }
-      console.log(JSON.parse(snapshot.val().retador.estrategia));
+      //console.log(snapshot.val().retador.estrategia);
      /* alertPopup.then(function(res) { ESTE POPUP FALLA SI ENTRA POR EL ELSE PORQUE NO VA A ESTAR DEFINIDO
         //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
       });*/
     }
   });
+
+  $scope.verificarSiPerdi = function() {
+    for(var k in $scope._misBarcos) {
+      if ($scope._misBarcos[k] == $scope.disparoRival) {
+          delete $scope._misBarcos[k];
+          console.info("Estrategia actualizada", $scope._misBarcos);
+          break;
+        } 
+       console.log("agua");
+      }
+
+    if(angular.equals($scope._misBarcos, {})){//Verifico si se queda sin barcos para informar que perdió!
+      $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
+      MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ganador/", $scope.partida.rival)
+      .then(function(resultado){
+        $ionicLoading.hide();
+      },function (error){
+          console.log("Error!!");
+          $ionicLoading.hide();
+      });  
+    }
+  }
+
+  $scope.actualizarCredito = function(resultadoPartida) {
+    var updates = {};
+    var credito;
+    var updates = {};
+    if(resultadoPartida == "ganaste"){
+      credito = Number(Usuario.getUsuario().credito) + Number($scope.partida.apuesta); 
+    }else{
+      credito = Number(Usuario.getUsuario().credito) - Number($scope.partida.apuesta); 
+    }
+
+    updates['/Usuarios/' + Usuario.getUsuario().id +"/credito" ] = credito;
+    /*updates['/Usuarios/' + Usuario.getUsuario().id +"/victorias" ] = ;
+    updates['/Usuarios/' + Usuario.getUsuario().id +"/derrotas" ] = ;*/
+
+      MiServicioFB.Editar(updates)
+      .then(function(resultado){
+        $ionicLoading.hide();
+      },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+      });  
+  }
 
 
   //TIMER:
