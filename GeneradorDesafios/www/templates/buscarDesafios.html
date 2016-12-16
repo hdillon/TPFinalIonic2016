@@ -1,6 +1,6 @@
 <ion-view view-title="Browse">
   <ion-content class="animate-fade-slide-in">
-    <div ng-repeat="desafio in ListadoDesafios" >
+    <div ng-repeat="desafio in ListadoDesafios" ng-if="desafio.activo">
         <div  class="list half">
               <div ng-click="aceptarDesafio(desafio)" class="card card-gallery item item-text-wrap">
                   <div class="ink dark-bg">

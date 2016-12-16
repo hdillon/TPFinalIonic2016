@@ -9,16 +9,8 @@ angular.module('starter.controllers', [])
     $scope.modal = modal;
   });
 
-/*
-for(var i = 0 ; i < 20 ; i++){
-  $timeout(function () {
-    console.info("USUARIO: ", Usuario.getUsuario());
-  }, 10000 * i);
-}
-*/
-
 //Si un retador agrega una partida en la base y el creador del desafio es el current user se muestra el popUp para comenzar el juego
-MiServicioFB.Cargar('/Partidas')
+  MiServicioFB.Cargar('/Partidas')
   .on('child_added',function(snapshot)
   {
     console.info("partida: ",snapshot.val());
@@ -26,100 +18,108 @@ MiServicioFB.Cargar('/Partidas')
       $scope.partida = snapshot.val();
       $scope.partida.player = 'creador';
       $scope.partida.rival = 'retador';
-      var alertPopup = $ionicPopup.alert({
+      var alertPopup = $ionicPopup.confirm({
          title: snapshot.val().retador.nombre + " aceptó tu desafío!",
-         okText: "JUGAR"
+         okText: "JUGAR",
+         cancelText: 'RECHAZAR'
       });
 
       alertPopup.then(function(res) {
-        $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
+        console.info("RES: ", res);
+        if(res){//si aceptó jugar la partida
+          $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
+        }else{
+          MiServicioFB.Borrar("/Partidas/"+$scope.partida.id)//Si rechaza la invitación, borro de la base el nodo partida que creó el retador
+          .then(function(resultado){
+            $ionicLoading.hide();
+          },function (error){
+            console.log("Error!!");
+            $ionicLoading.hide();
+          });  
+        }
 
       });
     }
   });
   
-
   $scope.isExpanded = false;
-    $scope.hasHeaderFabLeft = true;
-    $scope.hasHeaderFabRight = true;
+  $scope.hasHeaderFabLeft = true;
+  $scope.hasHeaderFabRight = true;
 
-    var navIcons = document.getElementsByClassName('ion-navicon');
-    for (var i = 0; i < navIcons.length; i++) {
-        navIcons.addEventListener('click', function() {
-            this.classList.toggle('active');
-        });
+  var navIcons = document.getElementsByClassName('ion-navicon');
+  for (var i = 0; i < navIcons.length; i++) {
+      navIcons.addEventListener('click', function() {
+          this.classList.toggle('active');
+      });
+  }
+
+  ////////////////////////////////////////
+  // Layout Methods
+  ////////////////////////////////////////
+
+  $scope.hideNavBar = function() {
+    document.getElementsByTagName('ion-nav-bar')[0].style.display = 'none';
+  };
+
+  $scope.showNavBar = function() {
+    document.getElementsByTagName('ion-nav-bar')[0].style.display = 'block';
+  };
+
+  $scope.noHeader = function() {
+    var content = document.getElementsByTagName('ion-content');
+    for (var i = 0; i < content.length; i++) {
+        if (content[i].classList.contains('has-header')) {
+            content[i].classList.toggle('has-header');
+        }
+    }
+  };
+
+  $scope.setExpanded = function(bool) {
+    $scope.isExpanded = bool;
+  };
+
+  $scope.setHeaderFab = function(location) {
+    var hasHeaderFabLeft = false;
+    var hasHeaderFabRight = false;
+
+    switch (location) {
+        case 'left':
+            hasHeaderFabLeft = true;
+            break;
+        case 'right':
+            hasHeaderFabRight = true;
+            break;
     }
 
-    ////////////////////////////////////////
-    // Layout Methods
-    ////////////////////////////////////////
+    $scope.hasHeaderFabLeft = hasHeaderFabLeft;
+    $scope.hasHeaderFabRight = hasHeaderFabRight;
+  };
 
-    $scope.hideNavBar = function() {
-        document.getElementsByTagName('ion-nav-bar')[0].style.display = 'none';
-    };
-
-    $scope.showNavBar = function() {
-        document.getElementsByTagName('ion-nav-bar')[0].style.display = 'block';
-    };
-
-    $scope.noHeader = function() {
-        var content = document.getElementsByTagName('ion-content');
-        for (var i = 0; i < content.length; i++) {
-            if (content[i].classList.contains('has-header')) {
-                content[i].classList.toggle('has-header');
-            }
+  $scope.hasHeader = function() {
+    var content = document.getElementsByTagName('ion-content');
+    for (var i = 0; i < content.length; i++) {
+        if (!content[i].classList.contains('has-header')) {
+            content[i].classList.toggle('has-header');
         }
-    };
+    }
+  };
 
-    $scope.setExpanded = function(bool) {
-        $scope.isExpanded = bool;
-    };
+  $scope.hideHeader = function() {
+    $scope.hideNavBar();
+    $scope.noHeader();
+  };
 
-    $scope.setHeaderFab = function(location) {
-        var hasHeaderFabLeft = false;
-        var hasHeaderFabRight = false;
+  $scope.showHeader = function() {
+      $scope.showNavBar();
+      $scope.hasHeader();
+  };
 
-        switch (location) {
-            case 'left':
-                hasHeaderFabLeft = true;
-                break;
-            case 'right':
-                hasHeaderFabRight = true;
-                break;
-        }
-
-        $scope.hasHeaderFabLeft = hasHeaderFabLeft;
-        $scope.hasHeaderFabRight = hasHeaderFabRight;
-    };
-
-    $scope.hasHeader = function() {
-        var content = document.getElementsByTagName('ion-content');
-        for (var i = 0; i < content.length; i++) {
-            if (!content[i].classList.contains('has-header')) {
-                content[i].classList.toggle('has-header');
-            }
-        }
-
-    };
-
-    $scope.hideHeader = function() {
-        $scope.hideNavBar();
-        $scope.noHeader();
-    };
-
-    $scope.showHeader = function() {
-        $scope.showNavBar();
-        $scope.hasHeader();
-    };
-
-    $scope.clearFabs = function() {
-        var fabs = document.getElementsByClassName('button-fab');
-        if (fabs.length && fabs.length > 1) {
-            fabs[0].remove();
-        }
-    };
-
-
+  $scope.clearFabs = function() {
+    var fabs = document.getElementsByClassName('button-fab');
+    if (fabs.length && fabs.length > 1) {
+        fabs[0].remove();
+    }
+  };
 
   $scope.closeLogin = function() {
     $scope.modal.hide();
@@ -142,9 +142,7 @@ MiServicioFB.Cargar('/Partidas')
 
 .controller('JugarCtrl', function($scope,$state, $stateParams, $timeout, $ionicPopup, Usuario, $ionicLoading, MiServicioFB) {
   if($stateParams.partida != "")
-  {
     $scope.partida = JSON.parse($stateParams.partida);
-  }
 
   $scope.matriz = [];
   $scope._misBarcos = {};
@@ -153,16 +151,12 @@ MiServicioFB.Cargar('/Partidas')
   $scope.contadorDisparosRival = 0;
   $scope.disparoRival = "";
   $scope.arrayLetras = ['A','B','C','D','E'];
-  $scope.flagInformarAlUsuario = false;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
+  $scope.flagInformarAlUsuario = true;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
   var contadorColumnas = 5;
   var contadorFilas = 5;
   var contadorApuestas = 0;
   $scope.metodoMatriz = "setVal";//Cuando carga el controller la primera vez, se usa este método en la matriz para elegir las pocisiones de juego
-  var ledButton = {
-    value: '0',
-    column: 0,
-    row: 0
-  };
+  var ledButton = {value: '0', column: 0, row: 0 };
 
 //Inicializa la matriz con ceros:
   $scope.init = function() {
@@ -203,7 +197,7 @@ MiServicioFB.Cargar('/Partidas')
     console.info("Mi Estrategia", $scope._misBarcos);
   };
 
-  $scope.clear = function() {
+  $scope.clear = function() {//Limpio la matriz
     angular.forEach($scope.matriz, function(val, key) {
       angular.forEach(val, function(col, key) {
         col.value = '0';
@@ -211,31 +205,17 @@ MiServicioFB.Cargar('/Partidas')
     });
   };
 
-  /*var generateCode = function() {
-    $scope.code = "";
-
-    angular.forEach($scope.matriz, function(val, key) {
-      var codePart = "B";
-      angular.forEach(val, function(col, key) {
-
-        codePart += col.value;
-      });
-      $scope.code += codePart;
-      if(key!=(contadorColumnas-1)){
-        $scope.code += ",";
-      }
-    });
-
-    $scope.code += "};";
-  };*/
-
-  $scope.confirmarApuesta = function() {
+  $scope.confirmarEstrategia = function() {
     $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
     MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/estrategia/", $scope._misBarcos)
     .then(function(resultado){
       $ionicLoading.hide();
       $scope.metodoMatriz = "guardarJugada";//una vez que confirma la apuesta el método por defecto en la matriz va a ser el que guarde cada disparo
       $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+      if($scope.partida.player == "retador")//El primer turno siempre es para el creador de la partida
+        $ionicLoading.show({content: 'Loading', template: 'Esperando que ' + $scope.partida[$scope.partida.rival].nombre + ' juegue...', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
+      else
+        var alertPopup = $ionicPopup.alert({title: "INICIA EL JUEGO!", okText: "ACEPTAR"});
     },function (error){
         console.log("Error!!");
         $ionicLoading.hide();
@@ -244,30 +224,29 @@ MiServicioFB.Cargar('/Partidas')
 
   //Guardo en la base cada vez que el jugador dispara
   $scope.guardarJugada = function(btn) {
-    console.info("celda:", btn);
+    btn.value = "1";
+    $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
     $scope._disparos[$scope.contadorDisparosPlayer] = btn.column+btn.row;//voy acumulando los disparos del player
     $scope.contadorDisparosPlayer ++;
     $scope.flagInformarAlUsuario = false;
     MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/"+$scope.partida.player+"/disparos/", $scope._disparos)
     .then(function(resultado){
-      $ionicLoading.hide();
-      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
+  
     },function (error){
-        console.log("Error!!");
-        $ionicLoading.hide();
+      console.log("Error!!");
+      $ionicLoading.hide();
     }); 
  
     $timeout(function () {//Le agrego un timeout de 2 seg para darle tiempo a que se ejecute completamente los eventos que guardan el ultimo en jugar
-    //voy actualizando el flag en la base para saber quién fué el último que jugó (creador ó retador)
-    $scope.flagInformarAlUsuario = true;
-    MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ultimoenjugar/", $scope.partida.player)
-    .then(function(resultado){
-      $ionicLoading.hide();
-      $scope.clear(); //una vez que confirma la apuesta limpio la matriz para que comience a jugar
-    },function (error){
+      $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
+      $scope.flagInformarAlUsuario = true;//voy actualizando el flag en la base para saber quién fué el último que jugó (creador ó retador)
+      MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ultimoenjugar/", $scope.partida.player)
+      .then(function(resultado){
+
+      },function (error){
         console.log("Error!!");
         $ionicLoading.hide();
-    });  
+      });  
     }, 2000); 
   };
 
@@ -276,21 +255,23 @@ MiServicioFB.Cargar('/Partidas')
   .on('child_changed',function(snapshot)
   {
     if(snapshot.val().id == $scope.partida.id){
+
       if(snapshot.val().ganador != undefined){//Siempre que se actualiza algo en la partida verifico si ya ganó alguno
         if(snapshot.val().ganador == $scope.partida.player){
-          var alertPopup = $ionicPopup.alert({title: "GANASTE!", okText: "ACEPTAR"});
+          var alertPopup = $ionicPopup.alert({title: "GANASTE " + $scope.partida.apuesta + " CREDITOS!", okText: "ACEPTAR"});
           $scope.actualizarCredito("ganaste");
         }else{
           var alertPopup = $ionicPopup.alert({title: "PERDISTE! :(", okText: "ACEPTAR"});
           $scope.actualizarCredito("perdiste");
         }
         alertPopup.then(function(res) {
-            $state.go('app.buscardesafios');
+          $state.go('app.buscardesafios');
         });
       }
 
       if($scope.flagInformarAlUsuario && $scope.partida.player != snapshot.val().ultimoenjugar && snapshot.val().ultimoenjugar != undefined){//acá verifico si el que disparó el evento es el otro usuario!  
-        var alertPopup = $ionicPopup.alert({title: snapshot.val().ultimoenjugar + " Jugó!", okText: "JUGAR"});
+        $ionicLoading.hide();
+        //var alertPopup = $ionicPopup.alert({title: $scope.partida[$scope.partida.rival].nombre + " Jugó!", okText: "JUGAR"});
         $scope.stopTimer();
         $scope.startTimer();
         //ACÁ DEBERÍA DESBLOQUEAR LA PANTALLA Y COMENZAR A CORRER  EL TIMER
@@ -299,18 +280,29 @@ MiServicioFB.Cargar('/Partidas')
         $scope.contadorDisparosRival ++;
 
         $scope.verificarSiPerdi();
-        
-        
 
-      }else{
+      }else{//BLOQUEO LA PANTALLA DEL QUE JUGÓ QUE QUEDA A LA ESPERA DE QUE JUEGUE EL CONTRARIO
         $scope.stopTimer();
-        //ACÁ DEBERÍA BLOQUEAR LA PANTALLA DEL QUE JUGÓ QUE QUEDA A LA ESPERA DE QUE JUEGUE EL CONTRARIO
+        if(snapshot.val().ultimoenjugar != undefined && $scope.flagInformarAlUsuario){
+          $ionicLoading.hide();
+          $ionicLoading.show({content: 'Loading', template: 'Esperando que ' + $scope.partida[$scope.partida.rival].nombre + ' juegue...', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
+        }
       }
-      //console.log(snapshot.val().retador.estrategia);
-     /* alertPopup.then(function(res) { ESTE POPUP FALLA SI ENTRA POR EL ELSE PORQUE NO VA A ESTAR DEFINIDO
-        //$state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
-      });*/
+
     }
+  });
+
+
+//EN CASO DE QUE EL CREADOR RECHACE LA INVITACION SE BORRA LA PARTIDA Y SE AVISA AL RETADOR:
+  MiServicioFB.Cargar('/Partidas')
+  .on("child_removed", function(snapshot) {
+    if(snapshot.val().id == $scope.partida.id){
+      var alertPopup = $ionicPopup.alert({title: $scope.partida.rival + " Rechazó la invitación", okText: "ACEPTAR"});
+      alertPopup.then(function(res) {
+          $state.go('app.buscardesafios');
+      });
+    }
+      
   });
 
   $scope.verificarSiPerdi = function() {
@@ -329,8 +321,8 @@ MiServicioFB.Cargar('/Partidas')
       .then(function(resultado){
         $ionicLoading.hide();
       },function (error){
-          console.log("Error!!");
-          $ionicLoading.hide();
+        console.log("Error!!");
+        $ionicLoading.hide();
       });  
     }
   }
@@ -348,6 +340,19 @@ MiServicioFB.Cargar('/Partidas')
     updates['/Usuarios/' + Usuario.getUsuario().id +"/credito" ] = credito;
     /*updates['/Usuarios/' + Usuario.getUsuario().id +"/victorias" ] = ;
     updates['/Usuarios/' + Usuario.getUsuario().id +"/derrotas" ] = ;*/
+      MiServicioFB.Editar(updates)
+      .then(function(resultado){
+        $ionicLoading.hide();
+      },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+      });  
+  }
+
+
+  $scope.actualizarEstadoDesafio = function() {
+    var updates = {};
+    updates['/Desafios/' + $scope.partida.id +"/activo" ] = false;
 
       MiServicioFB.Editar(updates)
       .then(function(resultado){
@@ -364,9 +369,9 @@ MiServicioFB.Cargar('/Partidas')
   var mytimeout = null; // the current timeoutID
     $scope.onTimeout = function() {
       if($scope.counter ===  0) {
-          $scope.$broadcast('timer-stopped', 0);
-          $timeout.cancel(mytimeout);
-          return;
+        $scope.$broadcast('timer-stopped', 0);
+        $timeout.cancel(mytimeout);
+        return;
       }
       $scope.counter--;
       mytimeout = $timeout($scope.onTimeout, 1000);
@@ -383,19 +388,21 @@ MiServicioFB.Cargar('/Partidas')
     };
     // triggered, when the timer stops, you can do something here, maybe show a visual indicator or vibrate the device
     $scope.$on('timer-stopped', function(event, remaining) {
-        if(remaining === 0) {
-          var alertPopup = $ionicPopup.alert({
-           title: 'Se te agotó el tiempo! :(',
-           okText: "ACEPTAR"
-          });
-          alertPopup.then(function(res) {
-            $state.go('app.buscardesafios');//TODO:dar por ganado al contrario!
-          });
-        }
+      if(remaining === 0) {
+        var alertPopup = $ionicPopup.alert({
+         title: 'Se te agotó el tiempo! :(',
+         okText: "ACEPTAR"
+        });
+        alertPopup.then(function(res) {
+          $state.go('app.buscardesafios');//TODO:dar por ganado al contrario!
+        });
+      }
     });
 
   $scope.startTimer();//apenas carga la vista del juego comienza a contar el tiempo
 
+  if($scope.partida.player == "creador")//si el creador aceptó el desafío, lo paso a inactivo
+    $scope.actualizarEstadoDesafio();
 })
 
 .controller('PerfilCtrl', function($scope) {

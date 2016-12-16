@@ -22,19 +22,23 @@ angular.module('starter.controllerdesafios', [])
 
   //Activa los efectos MaterialMotion
   $timeout(function () {
-		$ionicLoading.hide();
-    ionicMaterialInk.displayEffect();
+    try{
+      $ionicLoading.hide();
+      ionicMaterialInk.displayEffect();
 
-    ionicMaterialMotion.pushDown({
-        selector: '.push-down'
-    });
-    ionicMaterialMotion.fadeSlideInRight({
-        selector: '.animate-fade-slide-in .item'
-    });
+      ionicMaterialMotion.pushDown({
+          selector: '.push-down'
+      });
+      ionicMaterialMotion.fadeSlideInRight({
+          selector: '.animate-fade-slide-in .item'
+      });
+    }catch(error){
+      console.info("MaterialMotion: ", error);
+    }
+		
 	}, 5000);
 
 	$scope.aceptarDesafio = function(desafio) {
-  		//alert("Esperar que " + desafio.usuario.nombre + " responda...");
       $scope.partida = {};
       $scope.partida.creador = desafio.usuario;
       $scope.partida.retador = Usuario.getUsuario();
@@ -46,8 +50,7 @@ angular.module('starter.controllerdesafios', [])
       $scope.partida.rival = 'creador';
       $state.go('app.jugar', {partida : JSON.stringify($scope.partida)});
     },function (error){
-        console.log("Error!!");
-  
+      console.log("Error!!");
     });  
       
 	}
@@ -79,22 +82,21 @@ angular.module('starter.controllerdesafios', [])
 		maxWidth: 200,
 		showDelay: 2
 	});
-
     
-    console.info("user",Usuario.getUsuario());
-    $scope.desafio.usuario = Usuario.getUsuario();
-    $scope.desafio.activo = true;
-    $scope.desafio.fecha = new Date().valueOf();
-    $scope.desafio.id = $scope.desafio.usuario.nombre+$scope.desafio.fecha;
+  console.info("user",Usuario.getUsuario());
+  $scope.desafio.usuario = Usuario.getUsuario();
+  $scope.desafio.activo = true;
+  $scope.desafio.fecha = new Date().valueOf();
+  $scope.desafio.id = $scope.desafio.usuario.nombre+$scope.desafio.fecha;
 
-    MiServicioFB.Guardar("/Desafios/"+$scope.desafio.usuario.nombre+$scope.desafio.fecha+"/", $scope.desafio)
-    .then(function(resultado){
-    	$ionicLoading.hide();
-    	$state.go('app.buscardesafios');
-    },function (error){
-        console.log("Error!!");
-        $ionicLoading.hide();
-  	});  
+  MiServicioFB.Guardar("/Desafios/"+$scope.desafio.usuario.nombre+$scope.desafio.fecha+"/", $scope.desafio)
+  .then(function(resultado){
+  	$ionicLoading.hide();
+  	$state.go('app.buscardesafios');
+  },function (error){
+    console.log("Error!!");
+    $ionicLoading.hide();
+	});  
 
   	//Por las dudas siempre intento ocultar el spinner pasados 10 seg.
 	$timeout(function () {

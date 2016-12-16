@@ -2,6 +2,7 @@ angular.module('starter.miserviciofirebase', [])
 .service('MiServicioFB', function($timeout) {
     this.Nombre = "Servicio Firebase";
     this.Guardar = Guardar;
+    this.Borrar = Borrar;
     this.Editar = Editar;
     this.Buscar = Buscar;
     this.Cargar = Cargar;
@@ -12,6 +13,10 @@ angular.module('starter.miserviciofirebase', [])
 
     function Editar(objeto){
       return firebase.database().ref().update(objeto);
+    }
+
+    function Borrar(ruta){
+      return firebase.database().ref(ruta).remove();
     }
 
     function Buscar(ruta){
