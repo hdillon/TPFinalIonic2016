@@ -21,7 +21,7 @@ angular.module('starter.controllers', [])
       var alertPopup = $ionicPopup.confirm({
          title: snapshot.val().retador.nombre + " aceptó tu desafío!",
          okText: "JUGAR",
-         cancelText: 'RECHAZAR'
+         cancelText: 'NO'
       });
 
       alertPopup.then(function(res) {
@@ -300,8 +300,6 @@ angular.module('starter.controllers', [])
             var alertPopup = $ionicPopup.alert({title: "INICIA EL JUEGO!", okText: "ACEPTAR"});
           }
         }
-        
-
 
       }
 
@@ -313,7 +311,7 @@ angular.module('starter.controllers', [])
   MiServicioFB.Cargar('/Partidas')
   .on("child_removed", function(snapshot) {
     if(snapshot.val().id == $scope.partida.id){
-      var alertPopup = $ionicPopup.alert({title: $scope.partida.rival + " Rechazó la invitación", okText: "ACEPTAR"});
+      var alertPopup = $ionicPopup.alert({title: $scope.partida[$scope.partida.rival].nombre + " Rechazó la invitación", okText: "ACEPTAR"});
       alertPopup.then(function(res) {
           $state.go('app.buscardesafios');
       });
@@ -440,14 +438,6 @@ angular.module('starter.controllers', [])
 
   if($scope.partida.player == "creador")//si el creador aceptó el desafío, lo paso a inactivo
     $scope.actualizarEstadoDesafio();
-})
-
-.controller('PerfilCtrl', function($scope, Usuario) {
-  $scope.email = Usuario.getUsuario().email;
-  $scope.nombre = Usuario.getUsuario().nombre;
-  $scope.credito = Usuario.getUsuario().credito;
-  $scope.victorias = Usuario.getUsuario().victorias;
-  $scope.derrotas = Usuario.getUsuario().derrotas;
 });
 
 

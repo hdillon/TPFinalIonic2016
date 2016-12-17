@@ -1,6 +1,6 @@
-<ion-view view-title="Desafios" style="background-image: url('img/dd.jpg')">
+<ion-view view-title="Desafios" style="background-image: url('img/ii.jpg')">
   <ion-content class="animate-fade-slide-in">
-    <div ng-repeat="desafio in ListadoDesafios" ng-if="desafio.activo">
+    <div ng-repeat="desafio in ListadoDesafios" ng-if="desafio.activo && desafio.usuario.id != idUsuario">
         <div  class="list half">
               <div ng-click="aceptarDesafio(desafio)" class="card card-gallery item item-text-wrap">
                   <div class="ink dark-bg">

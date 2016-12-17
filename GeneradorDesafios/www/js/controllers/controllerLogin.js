@@ -37,10 +37,14 @@ angular.module('starter.controllerlogin', [])
             }else{
               $scope.mostrarVerificar = true;
             }*/
+          $timeout(function() {
+            console.info("usuario", Usuario.getUsuario());
+            $ionicLoading.hide();
             $state.go('app.buscardesafios');
+          }, 3000);
+            
           }
         });
-        $ionicLoading.hide();
       },function (error){
           $timeout(function() {
             console.info("error: ", error);
@@ -50,12 +54,7 @@ angular.module('starter.controllerlogin', [])
       }catch(error){
         console.log("No se pudo completar el login");
         $ionicLoading.hide();
-      }
-
-      $timeout(function() {
-            console.info("usuario", Usuario.getUsuario());
-          }, 3000);
-    
+      }    
     };
 
 //emailVerified: false

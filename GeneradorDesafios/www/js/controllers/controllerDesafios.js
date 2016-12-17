@@ -11,6 +11,8 @@ angular.module('starter.controllerdesafios', [])
   });
 
   console.info(Usuario.getUsuario());
+  $scope.idUsuario = Usuario.getUsuario().id;
+  console.log($scope.idUsuario);
 
 	$scope.ListadoDesafios = [];
 	var i = 0;
