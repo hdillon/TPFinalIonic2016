@@ -20,8 +20,8 @@ angular.module('starter.factoryUsuario', [])
 
     }
 
-    usuario.cargarCredito = function (codigo) {
-        var codigoDesencriptado = $crypto.decrypt(codigo);
+    usuario.cargarCredito = function (obj) {
+        var codigoDesencriptado = $crypto.decrypt(obj.codigo);
         var cantidadCredito = codigoDesencriptado.split("$");
         cantidadCredito = usuario.credito + Number(cantidadCredito[1]); //sumo el credito que ya tenía el usuario con el del código QR
         FBRefUsuario.update({
@@ -30,7 +30,7 @@ angular.module('starter.factoryUsuario', [])
 
         var updateEstadoCredito = {};
 
-        updateEstadoCredito['/Creditos/' + codigo + "/usado"] = true;
+        updateEstadoCredito['/Creditos/' + obj.id + "/usado"] = true;
         firebase.database().ref().update(updateEstadoCredito);
     }
 

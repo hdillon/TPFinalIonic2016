@@ -153,6 +153,7 @@ angular.module('starter.controllers', [])
   $scope.arrayLetras = ['A','B','C','D','E'];
   $scope.flagInformarAlUsuario = true;//lo uso para validar si tengo que mostrar un popup según el evento que se dispare
   $scope.flagConfirmoEstrategia = false;
+  $scope.flagSeAgotoElTiempo = false;
   var contadorColumnas = 5;
   var contadorFilas = 5;
   $scope.contadorBarcosEstrategia = 0;
@@ -329,7 +330,7 @@ angular.module('starter.controllers', [])
        console.log("agua");
       }
 
-    if(angular.equals($scope._misBarcos, {})){//Verifico si se queda sin barcos para informar que perdió!
+    if(angular.equals($scope._misBarcos, {}) || $scope.flagSeAgotoElTiempo){//Verifico si se queda sin barcos para informar que perdió!
       $ionicLoading.show({content: 'Loading', animation: 'fade-in', showBackdrop: true, maxWidth: 200, showDelay: 2 });
       MiServicioFB.Guardar("/Partidas/"+$scope.partida.id+"/ganador/", $scope.partida.rival)
       .then(function(resultado){
@@ -400,7 +401,7 @@ angular.module('starter.controllers', [])
 
 
   //TIMER:
-  $scope.counter = 9000;
+  $scope.counter = 30;
   var mytimeout = null; // the current timeoutID
     $scope.onTimeout = function() {
       if($scope.counter ===  0) {
@@ -418,7 +419,7 @@ angular.module('starter.controllers', [])
     // stops and resets the current timer
     $scope.stopTimer = function() {
       $scope.$broadcast('timer-stopped', $scope.counter);
-      $scope.counter = 9000;
+      $scope.counter = 30;
       $timeout.cancel(mytimeout);
     };
     // triggered, when the timer stops, you can do something here, maybe show a visual indicator or vibrate the device
@@ -429,6 +430,8 @@ angular.module('starter.controllers', [])
          okText: "ACEPTAR"
         });
         alertPopup.then(function(res) {
+          $scope.flagSeAgotoElTiempo = true;
+          $scope.verificarSiPerdi();
           $state.go('app.buscardesafios');//TODO:dar por ganado al contrario!
         });
       }

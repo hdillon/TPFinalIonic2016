@@ -9,9 +9,10 @@ angular.module('starter.controladorCreditos', [])
     var codigoEncriptado = {};
     var encrypted = $crypto.encrypt(Usuario.nombre + ' ' + fechaActual() + '$' + $scope.credito.cantidad);
     var decrypted = $crypto.decrypt(encrypted);
+    codigoEncriptado.id = fechaActual();
     codigoEncriptado.codigo = encrypted;
     codigoEncriptado.usado = false;
-    MiServicioFB.Guardar("/Creditos/" + encrypted + "/", codigoEncriptado);
+    MiServicioFB.Guardar("/Creditos/" + codigoEncriptado.id + "/", codigoEncriptado);
     $state.go('app.buscardesafios');
   }
 
@@ -63,7 +64,7 @@ angular.module('starter.controladorCreditos', [])
         if(creditos.codigo == codigo.text && !creditos.usado){
         	console.log("coinciden!!");
         	console.log("CODIGO: ", codigo.text);
-        	Usuario.cargarCredito(codigo.text);
+        	Usuario.cargarCredito(creditos);
         }
      })
   }
