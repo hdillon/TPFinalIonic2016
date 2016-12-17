@@ -1,16 +1,16 @@
-<ion-view view-title="Browse">
+<ion-view view-title="Crear Desafío" style="background-image: url('img/aa.jpg')">
   <ion-content>
-    <h1>Crear Desafio</h1>
+  <h2  style="color: white">APOSTAR:<span style="color: red"> {{desafio.apuesta}}</span></h2>
+ <br><br><br><br><br><br><br><br>
 
-    <div class="item range range-positive">
+    <div class="item range range-positive margenfix2">
 		    <span>1</span>
 		    <input type="range" min="1" max="300" ng-model="desafio.apuesta">
 		    <span>300</span>
 	</div>
-
-   Apostar:<span>{{desafio.apuesta}}</span>
-
+<br><br><br><br><br><br><br><br><br><br>
     <button  class="button button-block button-positive" ng-click="crearApuesta()">CREAR DESAFIO</button>
 
   </ion-content>
 </ion-view>
+

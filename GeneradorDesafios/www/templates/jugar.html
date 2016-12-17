@@ -1,4 +1,4 @@
-<ion-view view-title="Browse">
+<ion-view view-title="Jugar" style="background-image: url('img/ii.jpg')"> 
   <ion-content>
   <!-- http://embed.plnkr.co/3VUsekP3jC5xwSIQDVHx/preview -->
   <div class="margenjugar">
@@ -13,10 +13,10 @@
             <!-- con el this[] voy cambiando el método dinamicámente -->
           </table>  
         </div>
-
+        <h3> {{counter}} </h3>
         <button ng-if="contadorBarcosEstrategia == 4" class="button button-block button-balanced" ng-click="confirmarEstrategia()">CONFIRMAR ESTRATEGIA</button>
 
-               <h3> {{counter}} </h3>
+               
       </form>
   </center>
   </div>

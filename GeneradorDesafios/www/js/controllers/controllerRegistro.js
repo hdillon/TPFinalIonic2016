@@ -26,7 +26,7 @@ angular.module('starter.controllerregistro', [])
             $scope.loginData.uid = respuesta.uid;
             servicioABM.altaUsuario($scope.loginData);
             $ionicLoading.hide();
-            $state.go('app.login');
+            $state.go('login');
           });
         },function (error){
           $timeout(function() {

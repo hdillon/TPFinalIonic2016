@@ -1,10 +1,8 @@
 <ion-view view-title="Registro">
-  <ion-header-bar>
-    <h1 class="title">registro</h1>
-    <div class="buttons">
-      <button class="button button-clear" ng-click="closeLogin()">Close</button>
-    </div>
-  </ion-header-bar>
+  <ion-nav-bar class="bar-assertive-900" ng-class="{expanded: isExpanded, 'has-header-fab-left': hasHeaderFabLeft, 'has-header-fab-right': hasHeaderFabRight}" align-title="left">
+            <ion-nav-buttons side="right">
+            </ion-nav-buttons>
+        </ion-nav-bar>
     <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
     <form name="myForm">
       <div class="list">
@@ -17,6 +15,10 @@
 
         <label class="item" ng-if="myForm.$valid">
           <button  class="button button-block button-balanced" ng-click="registrarse()">Registrarse</button>
+        </label>
+
+        <label class="item" ng-if="myForm.$valid">
+          <button  class="button button-block button-assertive" ui-sref="login">Cancelar</button>
         </label>
 
     </form>

@@ -40,26 +40,20 @@ angular.module('starter',
       templateUrl: 'templates/menu.html',
       controller: 'AppCtrl'
     })
-    .state('app.login', {
-      url: '/login',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/login.html',
-          controller: 'LoginCtrl'
-        }
-      }
+    .state('login', {
+    url: '/login',
+        templateUrl: 'templates/login.html',
+        controller: 'LoginCtrl'
+
     })
-    .state('app.registro', {
+    .state('registro', {
       url: '/registro',
-      views: {
-        'menuContent': {
-          templateUrl: 'templates/registro.html',
-          controller: 'RegistroCtrl'
-        }
-      }
+        templateUrl: 'templates/registro.html',
+        controller: 'RegistroCtrl'
     })
     .state('app.perfil', {
         url: '/perfil',
+        cache: false,
         views: {
           'menuContent': {
             templateUrl: 'templates/perfil.html',
@@ -124,5 +118,5 @@ angular.module('starter',
       }
     });
 
-  $urlRouterProvider.otherwise('/app/login');
+  $urlRouterProvider.otherwise('/login');
 });

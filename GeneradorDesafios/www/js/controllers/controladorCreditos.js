@@ -1,6 +1,6 @@
 angular.module('starter.controladorCreditos', [])
 
-.controller('AltaCreditosCtrl', function($scope, servicioABM, MiServicioFB, Usuario, $crypto) {
+.controller('AltaCreditosCtrl', function($scope, $state, servicioABM, MiServicioFB, Usuario, $crypto) {
   $scope.credito = {};
   $scope.credito.cantidad = '0';
 
@@ -12,6 +12,7 @@ angular.module('starter.controladorCreditos', [])
     codigoEncriptado.codigo = encrypted;
     codigoEncriptado.usado = false;
     MiServicioFB.Guardar("/Creditos/" + encrypted + "/", codigoEncriptado);
+    $state.go('app.buscardesafios');
   }
 
   function fechaActual(){

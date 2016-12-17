@@ -1,5 +1,36 @@
-<ion-view view-title="Browse">
+<ion-view view-title="Perfil">
 <ion-content style="background: url(img/login.jpg) center; background-size: cover;">
-    <h1>Perfil</h1>
+    <div class="list card">
+
+  <a href="#" class="item item-icon-left">
+    <i class="icon ion-person"></i>
+    NICK: {{ nombre}}
+  </a>
+
+  <a href="#" class="item item-icon-left">
+    <i class="icon ion-at"></i>
+    EMAIL: {{ email}}
+  </a>
+
+  <a href="#" class="item item-icon-left">
+    <i class="icon ion-checkmark"></i>
+    VICTORIAS:
+  </a>
+
+  <a href="#" class="item item-icon-left">
+    <i class="icon ion-close"></i>
+    DERROTAS:
+  </a>
+
+  <a href="#" class="item item-icon-left">
+    <i class="icon ion-social-usd"></i>
+    CREDITOS: {{ credito}}
+  </a>
+
+<label class="item">
+  <button  class="button button-block button-balanced" ui-sref="app.buscardesafios" >Buscar Desafios</button>
+</label>
+
+</div>
   </ion-content>
 </ion-view>

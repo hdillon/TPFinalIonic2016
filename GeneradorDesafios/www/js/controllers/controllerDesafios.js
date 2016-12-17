@@ -73,35 +73,36 @@ angular.module('starter.controllerdesafios', [])
 
 .controller('CrearDesafioCtrl', function($scope, $state, $timeout, Usuario, $ionicLoading, MiServicioFB) {
 	$scope.desafio = {};
+  $scope.desafio.apuesta = 1;
   $scope.crearApuesta = function() {
   	//cuando preciona el boton bloqueo la interfaz con el spinner hasta que termine el proceso
-	$ionicLoading.show({
-		content: 'Loading',
-		animation: 'fade-in',
-		showBackdrop: true,
-		maxWidth: 200,
-		showDelay: 2
-	});
-    
-  console.info("user",Usuario.getUsuario());
-  $scope.desafio.usuario = Usuario.getUsuario();
-  $scope.desafio.activo = true;
-  $scope.desafio.fecha = new Date().valueOf();
-  $scope.desafio.id = $scope.desafio.usuario.nombre+$scope.desafio.fecha;
+  	$ionicLoading.show({
+  		content: 'Loading',
+  		animation: 'fade-in',
+  		showBackdrop: true,
+  		maxWidth: 200,
+  		showDelay: 2
+  	});
+      
+    console.info("user",Usuario.getUsuario());
+    $scope.desafio.usuario = Usuario.getUsuario();
+    $scope.desafio.activo = true;
+    $scope.desafio.fecha = new Date().valueOf();
+    $scope.desafio.id = $scope.desafio.usuario.nombre+$scope.desafio.fecha;
 
-  MiServicioFB.Guardar("/Desafios/"+$scope.desafio.usuario.nombre+$scope.desafio.fecha+"/", $scope.desafio)
-  .then(function(resultado){
-  	$ionicLoading.hide();
-  	$state.go('app.buscardesafios');
-  },function (error){
-    console.log("Error!!");
-    $ionicLoading.hide();
-	});  
+    MiServicioFB.Guardar("/Desafios/"+$scope.desafio.usuario.nombre+$scope.desafio.fecha+"/", $scope.desafio)
+    .then(function(resultado){
+    	$ionicLoading.hide();
+    	$state.go('app.buscardesafios');
+    },function (error){
+      console.log("Error!!");
+      $ionicLoading.hide();
+  	});  
 
-  	//Por las dudas siempre intento ocultar el spinner pasados 10 seg.
-	$timeout(function () {
-		$ionicLoading.hide();
-	}, 10000);
+    	//Por las dudas siempre intento ocultar el spinner pasados 10 seg.
+  	$timeout(function () {
+  		$ionicLoading.hide();
+  	}, 10000);
   }
 
 });

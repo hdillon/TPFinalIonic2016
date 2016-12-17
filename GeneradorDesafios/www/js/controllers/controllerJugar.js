@@ -419,8 +419,12 @@ angular.module('starter.controllers', [])
     $scope.actualizarEstadoDesafio();
 })
 
-.controller('PerfilCtrl', function($scope) {
-
+.controller('PerfilCtrl', function($scope, Usuario) {
+  $scope.email = Usuario.getUsuario().email;
+  $scope.nombre = Usuario.getUsuario().nombre;
+  $scope.credito = Usuario.getUsuario().credito;
+  $scope.email = Usuario.getUsuario().email;
+  $scope.email = Usuario.getUsuario().email;
 });
 
 

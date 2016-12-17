@@ -4,6 +4,11 @@ div.margenfix {
     margin-left: 5px;
 }
 
+div.margenfix2 {
+    margin-right: 30px;
+    margin-left: 0px;
+}
+
 div.margenjugar {
   
     margin-bottom: 100px;
