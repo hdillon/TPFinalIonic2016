@@ -6,6 +6,8 @@ angular.module('starter.controllerregistro', [])
     $scope.loginData.nombre = "Horacio";
     $scope.loginData.email = "dillonhoraciodavid@gmail.com";
     $scope.loginData.password = "34551422";
+    $scope.loginData.victorias = 0;
+    $scope.loginData.derrotas = 0;
 
     $scope.registrarse = function() {
       //cuando preciona el boton registrarse bloqueo la interfaz con el spinner hasta que termine el proceso de registro

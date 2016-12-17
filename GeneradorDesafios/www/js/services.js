@@ -9,7 +9,9 @@ angular.module('starter.services', [])
           "id": usuario.uid, 
           "nombre": usuario.nombre,
           "email": usuario.email,
-          "credito": 1000
+          "credito": 1000,
+          "victorias": usuario.victorias,
+          "derrotas": usuario.derrotas
         });
     }
 

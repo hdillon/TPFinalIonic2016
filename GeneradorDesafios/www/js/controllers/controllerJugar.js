@@ -260,9 +260,11 @@ angular.module('starter.controllers', [])
         if(snapshot.val().ganador == $scope.partida.player){
           var alertPopup = $ionicPopup.alert({title: "GANASTE " + $scope.partida.apuesta + " CREDITOS!", okText: "ACEPTAR"});
           $scope.actualizarCredito("ganaste");
+          $scope.actualizarEstadistica("victoria");
         }else{
           var alertPopup = $ionicPopup.alert({title: "PERDISTE! :(", okText: "ACEPTAR"});
           $scope.actualizarCredito("perdiste");
+          $scope.actualizarEstadistica("derrota");
         }
         alertPopup.then(function(res) {
           $state.go('app.buscardesafios');
@@ -364,6 +366,27 @@ angular.module('starter.controllers', [])
   }
 
 
+  $scope.actualizarEstadistica = function(resultadoPartida) {
+    var updates = {};
+    var updates = {};
+    if(resultadoPartida == "victoria"){
+      var victorias = Number(Usuario.getUsuario().victorias) + 1; 
+      updates['/Usuarios/' + Usuario.getUsuario().id +"/victorias" ] = victorias;
+    }else{
+      var derrotas = Number(Usuario.getUsuario().derrotas) + 1; 
+       updates['/Usuarios/' + Usuario.getUsuario().id +"/derrotas" ] = derrotas;
+    }
+
+      MiServicioFB.Editar(updates)
+      .then(function(resultado){
+        $ionicLoading.hide();
+      },function (error){
+        console.log("Error!!");
+        $ionicLoading.hide();
+      });  
+  }
+
+
   $scope.actualizarEstadoDesafio = function() {
     var updates = {};
     updates['/Desafios/' + $scope.partida.id +"/activo" ] = false;
@@ -423,8 +446,8 @@ angular.module('starter.controllers', [])
   $scope.email = Usuario.getUsuario().email;
   $scope.nombre = Usuario.getUsuario().nombre;
   $scope.credito = Usuario.getUsuario().credito;
-  $scope.email = Usuario.getUsuario().email;
-  $scope.email = Usuario.getUsuario().email;
+  $scope.victorias = Usuario.getUsuario().victorias;
+  $scope.derrotas = Usuario.getUsuario().derrotas;
 });
 
 
